@@ -61,6 +61,24 @@ class ApplicationSpec extends Specification {
       status(res) must equalTo(OK)
       contentAsString(res) must contain("Admin Login")
     }
+
+    "allow access to admin index after successful login" in new WithApplication {
+      val res = controllers.Application.authenticate(
+        FakeRequest().withFormUrlEncodedBody("email" -> "ned@flanders.com", "password" -> "password")
+      )
+
+      status(res) must equalTo(SEE_OTHER)
+      redirectLocation(res).map(_ must equalTo("/admin")) getOrElse failure("missing redirect location")
+    }
+
+    "deny access to admin index after failed login" in new WithApplication {
+      val res = controllers.Application.authenticate(
+        FakeRequest().withFormUrlEncodedBody("email" -> "bad@user.com", "password" -> "badpassword")
+      )
+
+      status(res) must equalTo(SEE_OTHER)
+      redirectLocation(res).map(_ must equalTo("/login")) getOrElse failure("missing redirect location")
+    }
   }
 
   "SiteMap Page" should {
