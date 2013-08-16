@@ -12,6 +12,6 @@ import play.api.mvc._
  */
 object Photos extends Controller {
   def index(id: String) = Action {
-    Ok(views.html.photo("Hello World!"))
+    Ok(views.html.photo("Hello World"))
   }
 }
