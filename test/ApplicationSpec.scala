@@ -4,30 +4,21 @@ import org.specs2.mutable._
 
 import play.api.test._
 import play.api.test.Helpers._
-
+import controllers.{Admin, AuthConfigImpl}
+import jp.t2v.lab.play2.auth.test.Helpers._
 /**
  * Add your spec here.
  * You can mock out a whole application including requests, plugins etc.
  * For more information, consult the wiki.
  */
 class ApplicationSpec extends Specification {
-  
-  "Application" should {
-    
-    "send 404 on a bad request" in {
-      running(FakeApplication()) {
-        route(FakeRequest(GET, "/boum")) must beNone        
-      }
-    }
-    
-    "render the index page" in {
-      running(FakeApplication()) {
-        val home = route(FakeRequest(GET, "/")).get
-        
-        status(home) must equalTo(OK)
-        contentType(home) must beSome.which(_ == "text/html")
-        contentAsString(home) must contain ("Your new application is ready.")
-      }
+
+  object config extends AuthConfigImpl
+
+  "Admin Index" should {
+    "return list when user is authorized" in new WithApplication {
+      val res = Admin.index(FakeRequest().withLoggedIn(config)("1"))
+      contentType(res).get must equalTo("text/html")
     }
   }
 }
