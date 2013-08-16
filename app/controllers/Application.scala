@@ -3,7 +3,7 @@ package controllers
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
-import com.gravitly.web.auth.Account
+import ly.gravit.web.auth.Account
 import jp.t2v.lab.play2.auth.LoginLogout
 
 object Application extends Controller with LoginLogout with AuthConfigImpl {

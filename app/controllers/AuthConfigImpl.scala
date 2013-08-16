@@ -1,6 +1,6 @@
 package controllers
 
-import com.gravitly.web.auth._
+import ly.gravit.web.auth._
 import play.api.mvc._
 import play.api.mvc.Results._
 import play.api.Play._

@@ -1,4 +1,4 @@
-package com.gravitly.web.auth
+package ly.gravit.web.auth
 
 /**
  * Created with IntelliJ IDEA.

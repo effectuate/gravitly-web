@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc._
 import views.html._
 import jp.t2v.lab.play2.auth.AuthElement
-import com.gravitly.web.auth._
+import ly.gravit.web.auth._
 
 /**
  * Created with IntelliJ IDEA.
