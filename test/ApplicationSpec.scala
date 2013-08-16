@@ -42,4 +42,14 @@ class ApplicationSpec extends Specification {
       contentAsString(res) must contain("Admin Login")
     }
   }
+
+  "SiteMap Page" should {
+    "return a valid xml" in new WithApplication {
+      val res = SiteMap.index(FakeRequest())
+
+      status(res) must equalTo(OK)
+      contentType(res) must beSome("text/xml")
+      contentAsString(res) must contain("urlset")
+    }
+  }
 }

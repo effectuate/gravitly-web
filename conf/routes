@@ -10,6 +10,7 @@ GET     /login                      controllers.Application.login
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 GET     /photos/:id                 controllers.Photos.index(id: String)
+GET     /sitemap.xml                controllers.SiteMap.index
 
 
 GET     /admin                      controllers.Admin.index
