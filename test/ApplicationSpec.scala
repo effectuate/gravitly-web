@@ -8,11 +8,8 @@ import controllers._
 import jp.t2v.lab.play2.auth.test.Helpers._
 
 /**
- * Add your spec here.
- * You can mock out a whole application including requests, plugins etc.
- * For more information, consult the wiki.
+ * http://www.playframework.com/documentation/2.0/ScalaFunctionalTest
  */
-
 class ApplicationSpec extends Specification {
 
   object config extends AuthConfigImpl
@@ -21,14 +18,27 @@ class ApplicationSpec extends Specification {
     "return login page when admin is not authenticated" in new WithApplication {
       val res = Admin.index(FakeRequest())
 
-      status(res) must equalTo(SEE_OTHER) // Does a 303 instead of a 307 http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+      status(res) must equalTo(SEE_OTHER)
       redirectLocation(res).map(_ must equalTo("/login")) getOrElse failure("missing redirect location")
     }
 
     "return admin index when admin is authorized" in new WithApplication {
       val res = Admin.index(FakeRequest().withLoggedIn(config)("1"))
       contentType(res) must beSome("text/html")
-      println(res)
+    }
+  }
+
+  "Admin Upload Page" should {
+    "return login page when admin is not authenticated" in new WithApplication {
+      val res = Admin.upload(FakeRequest())
+
+      status(res) must equalTo(SEE_OTHER)
+      redirectLocation(res).map(_ must equalTo("/login")) getOrElse failure("missing redirect location")
+    }
+    "return upload page when admin authorized" in new WithApplication {
+      val res = Admin.upload(FakeRequest().withLoggedIn(config)("1"))
+      contentType(res) must beSome("text/html")
+      contentAsString(res) must contain("Upload")
     }
   }
 

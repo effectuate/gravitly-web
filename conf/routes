@@ -15,3 +15,4 @@ GET     /photos/:id                 controllers.Photos.index(id: String)
 GET     /sitemap.xml                controllers.SiteMap.index
 
 GET     /admin                      controllers.Admin.index
+GET     /admin/upload               controllers.Admin.upload

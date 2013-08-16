@@ -10,12 +10,9 @@ package com.gravitly.web.auth
 case class Account(id: Int, email: String, password: String, name: String, permission: Permission)
 
 object Account {
+  val default = Account(1, "ned@flanders.com", "password", "Ned Flanders", Administrator)
 
-  def findById(id: String): Option[Account] = {
-    Option(Account(1, "ned@flanders.com", "password", "Ned Flanders", Administrator))
-  }
+  def findById(id: String): Option[Account] = Option(default)
 
-  def authenticate(email: String, password: String): Option[Account] = {
-    Option(Account(1, "ned@flanders.com", "password", "Ned Flanders", Administrator))
-  }
+  def authenticate(email: String, password: String): Option[Account] = Option(default)
 }

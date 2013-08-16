@@ -1,9 +1,9 @@
 package controllers
 
-import play.api.mvc.Controller
+import play.api.mvc._
 import views.html._
 import jp.t2v.lab.play2.auth.AuthElement
-import com.gravitly.web.auth.Administrator
+import com.gravitly.web.auth._
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,9 +15,10 @@ import com.gravitly.web.auth.Administrator
 object Admin extends Controller with AuthElement with AuthConfigImpl {
 
   def index = StackAction(AuthorityKey -> Administrator) { implicit request =>
-    println("### Inside Admin Index")
-    val user = loggedIn
-    Ok(admin.index(user))
+    Ok(admin.index(loggedIn))
   }
 
+  def upload = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    Ok(admin.upload())
+  }
 }
