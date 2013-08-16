@@ -14,4 +14,8 @@ object Account {
   def findById(id: String): Option[Account] = {
     Option(Account(1, "ned@flanders.com", "password", "Ned Flanders", Administrator))
   }
+
+  def authenticate(email: String, password: String): Option[Account] = {
+    Option(Account(1, "ned@flanders.com", "password", "Ned Flanders", Administrator))
+  }
 }
