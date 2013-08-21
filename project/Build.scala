@@ -11,7 +11,7 @@ object ApplicationBuild extends Build {
     // Add your project dependencies here,
     jdbc,
     anorm,
-    "dynobjx" %% "play-parseapi" % "0.1-SNAPSHOT",
+    //"dynobjx" %% "play-parseapi" % "0.1-SNAPSHOT",
     "jp.t2v" %% "play2.auth"      % "0.10.1",
     "jp.t2v" %% "play2.auth.test" % "0.10.1" % "test"
   )
