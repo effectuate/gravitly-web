@@ -2,6 +2,7 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import dynobjx.play.parseapi.ParseApi
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,6 +13,7 @@ import play.api.mvc._
  */
 object Photos extends Controller {
   def index(id: String) = Action {
+    ParseApi.get("User", "Ij8j7HtrxC")
     Ok(views.html.photo("Hello World"))
   }
 }

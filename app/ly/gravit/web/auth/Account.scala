@@ -9,6 +9,7 @@ import scala.collection.mutable
  * Time: 1:14 PM
  * To change this template use File | Settings | File Templates.
  */
+
 case class Account(id: String, email: String, password: String, name: String, permission: Permission)
 
 object Account {

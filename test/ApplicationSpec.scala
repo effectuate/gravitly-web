@@ -14,6 +14,12 @@ class ApplicationSpec extends Specification {
 
   object config extends AuthConfigImpl
 
+  "send 404 on a bad request" in {
+    running(FakeApplication()) {
+      route(FakeRequest(GET, "/boum")) must beNone
+    }
+  }
+
   "Admin Index" should {
     "return login page when admin is not authenticated" in new WithApplication {
       val res = Admin.index(FakeRequest())
