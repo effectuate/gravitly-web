@@ -1,1 +1,7 @@
-<input type="file" name="adminUpload" id="file">
+@(form: Form[ly.gravit.web.Photo])
+@helper.form(routes.Admin.submitUpload) {
+<input type="hidden" name="photoId" id="photoId" value="1">
+<input type="file" name="photoCaption" id="file">
+
+<button type="submit">SUBMIT</button>
+}

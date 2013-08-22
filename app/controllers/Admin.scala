@@ -6,6 +6,7 @@ import jp.t2v.lab.play2.auth.AuthElement
 import ly.gravit.web.auth._
 import play.api.data._
 import play.api.data.Forms._
+import ly.gravit.web.Photo
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,6 +15,7 @@ import play.api.data.Forms._
  * Time: 1:01 PM
  * To change this template use File | Settings | File Templates.
  */
+
 object Admin extends Controller with AuthElement with AuthConfigImpl {
 
   //def index = Action(AuthorityKey -> Administrator) { implicit request =>
@@ -25,11 +27,15 @@ object Admin extends Controller with AuthElement with AuthConfigImpl {
 
   //def upload = StackAction(AuthorityKey -> Administrator) { implicit request =>
   def upload = Action { implicit request =>
-    Ok(admin.upload())
+    Ok(admin.upload(uploadForm))
   }
 
-  val uploadForm = Form(
-      "adminUpload" -> text
+  val uploadForm : Form [Photo] = Form(
+  mapping(
+    "photoId" -> text,
+    "photoCaption" -> text
+  )(Photo.apply)(Photo.unapply)
+
   )
   def submitUpload = Action { implicit request =>
     uploadForm.bindFromRequest.fold(
@@ -38,7 +44,13 @@ object Admin extends Controller with AuthElement with AuthConfigImpl {
         Ok("not ok")
       },
       value => {
-        Redirect("list") //TODO change the redirect page
+        val params = request.body.asFormUrlEncoded.get
+        val photoId = request.body.asFormUrlEncoded.get("photoId").head;
+        val photoCaption = request.body.asFormUrlEncoded.get("photoCaption").head;
+        println("id --> "+photoId)
+        println("caption --> "+photoCaption)
+        println("params --> "+params)
+        Redirect("/admin/upload") //TODO change the redirect page
       }
     )
 
