@@ -82,8 +82,7 @@ class ApplicationSpec extends Specification {
         FakeRequest().withFormUrlEncodedBody("email" -> "bad@user.com", "password" -> "badpassword")
       )
 
-      status(res) must equalTo(SEE_OTHER)
-      redirectLocation(res).map(_ must equalTo("/login")) getOrElse failure("missing redirect location")
+      status(res) must equalTo(BAD_REQUEST)
     }
   }
 
