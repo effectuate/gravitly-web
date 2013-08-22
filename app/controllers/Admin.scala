@@ -6,8 +6,11 @@ import jp.t2v.lab.play2.auth.AuthElement
 import ly.gravit.web.auth._
 import play.api.data._
 import play.api.data.Forms._
-import ly.gravit.web.Photo
+import ly.gravit.web.UploadPhoto
 import org.reflections.vfs.Vfs.File
+import fly.play.s3._
+import fly.play.s3.PUBLIC_READ
+import scala.io.Source
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,10 +23,11 @@ import org.reflections.vfs.Vfs.File
 object Admin extends Controller with AuthElement with AuthConfigImpl {
 
 
- // private val config = play.api.Play.current.configuration
-  //private val bucketName = config.getString("gravitly.uploads.dev").get
-  //println("bucketName -> "+ bucketName)
-  //val bucket = S3(bucketName)
+  private val config = play.api.Play.current.configuration
+  private val bucketName = config.getString("s3.uploads.bucket").get
+  println("bucketName -> "+ bucketName)
+  val bucket = S3(bucketName)
+
 
 
   //def index = Action(AuthorityKey -> Administrator) { implicit request =>
@@ -38,29 +42,36 @@ object Admin extends Controller with AuthElement with AuthConfigImpl {
     Ok(admin.upload(uploadForm))
   }
 
-  val uploadForm : Form [Photo] = Form(
+  val uploadForm : Form [UploadPhoto] = Form(
   mapping(
-    "photoId" -> text,
-    "photoCaption" -> text
-  )(Photo.apply)(Photo.unapply)
-
+    "imageName" -> text
+  )(UploadPhoto.apply)(UploadPhoto.unapply)
   )
-  def submitUpload = Action { implicit request =>
-    uploadForm.bindFromRequest.fold(
-      formWithErrors => {
-       BadRequest
-        Ok("not ok")
-      },
-      value => {
-        val params = request.body.asFormUrlEncoded.get
-        val photoId = request.body.asFormUrlEncoded.get("photoId").head;
-        val photoCaption = request.body.asFormUrlEncoded.get("photoCaption").head;
-        println("id --> "+photoId)
-        println("caption --> "+photoCaption)
-        println("params --> "+params)
-        Redirect("/admin/upload") //TODO change the redirect page
-      }
-    )
 
-  }
+  def submitUpload = Action(parse.multipartFormData) { implicit request =>
+    request.body.file("imageName") match {
+        case Some(file) => {
+          val files  = file.ref.file.getAbsoluteFile()
+          val contentType = file.contentType
+          //convert file to bit array
+          val source = Source.fromFile(files)(scala.io.Codec.ISO8859)
+          val byteArray = source.map(_.toByte).toArray
+          source.close
+
+          val result = bucket.add(BucketFile(files.getName(), "image/jpeg", byteArray, Some(PUBLIC_READ)))
+
+          //comment this is for error handling of s3
+          /*result.map {
+            case Left(error) => Logger.error("S3 error : " + error)
+            None
+            case Right(success) =>  {Logger.debug("Saved the file")
+              Some(imageName)
+            }
+          }
+        }*/
+          Ok("file has been uplaoded")
+    }
+    }
+
+}
 }
