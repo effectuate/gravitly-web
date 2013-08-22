@@ -7,6 +7,7 @@ import ly.gravit.web.auth._
 import play.api.data._
 import play.api.data.Forms._
 import ly.gravit.web.Photo
+import org.reflections.vfs.Vfs.File
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,6 +18,13 @@ import ly.gravit.web.Photo
  */
 
 object Admin extends Controller with AuthElement with AuthConfigImpl {
+
+
+ // private val config = play.api.Play.current.configuration
+  //private val bucketName = config.getString("gravitly.uploads.dev").get
+  //println("bucketName -> "+ bucketName)
+  //val bucket = S3(bucketName)
+
 
   //def index = Action(AuthorityKey -> Administrator) { implicit request =>
   def index = Action { implicit request =>
