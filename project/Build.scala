@@ -11,13 +11,13 @@ object ApplicationBuild extends Build {
     // Add your project dependencies here,
     jdbc,
     anorm,
-    //"dynobjx" %% "play-parseapi" % "0.1-SNAPSHOT",
+    "nl.rhinofly" %% "api-s3" % "3.1.0",
     "jp.t2v" %% "play2.auth"      % "0.10.1",
     "jp.t2v" %% "play2.auth.test" % "0.10.1" % "test"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
-    // Add your own project settings here      
+    resolvers += "Rhinofly Internal Repository" at "http://maven-repository.rhinofly.net:8081/artifactory/libs-release-local"
   )
 
 }
