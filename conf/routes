@@ -16,3 +16,4 @@ GET     /sitemap.xml                controllers.SiteMap.index
 
 GET     /admin                      controllers.Admin.index
 GET     /admin/upload               controllers.Admin.upload
+POST    /admin/upload               controllers.Admin.submitUpload
