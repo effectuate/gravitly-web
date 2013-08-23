@@ -58,7 +58,7 @@ object Admin extends Controller with AuthElement with AuthConfigImpl {
           val byteArray = source.map(_.toByte).toArray
           source.close
 
-          val result = bucket.add(BucketFile(files.getName(), "image/jpeg", byteArray, Some(PUBLIC_READ)))
+          val result = bucket.add(BucketFile(files.getName(), contentType.get, byteArray, Some(PUBLIC_READ)))
 
           //comment this is for error handling of s3
           /*result.map {
