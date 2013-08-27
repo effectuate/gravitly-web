@@ -11,6 +11,8 @@ import org.reflections.vfs.Vfs.File
 import fly.play.s3._
 import fly.play.s3.PUBLIC_READ
 import scala.io.Source
+import java.util.UUID
+import ly.gravit.web.helpers.S3Helper
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,6 +49,18 @@ object Admin extends Controller with AuthElement with AuthConfigImpl {
     "imageName" -> text
   )(UploadPhoto.apply)(UploadPhoto.unapply)
   )
+   private def generateFileName(mineType: Option[String]) = {
+      UUID.randomUUID().toString() + generateExtension(mineType)
+    }
+    private def generateExtension(mineType: Option[String]) = {
+        mineType match {
+          case Some("image/png") => ".png"
+          case Some("image/gif") => ".gif"
+          case Some("image/jpeg") => ".jpeg"
+          case Some(_) => ".jpeg"
+          case None => ".jpeg"
+        }
+      }
 
   def submitUpload = Action(parse.multipartFormData) { implicit request =>
     request.body.file("imageName") match {
@@ -57,8 +71,9 @@ object Admin extends Controller with AuthElement with AuthConfigImpl {
           val source = Source.fromFile(files)(scala.io.Codec.ISO8859)
           val byteArray = source.map(_.toByte).toArray
           source.close
-
-          val result = bucket.add(BucketFile(files.getName(), contentType.get, byteArray, Some(PUBLIC_READ)))
+          val imageName =   Admin.generateFileName(contentType)
+          println(imageName)
+          val result = bucket.add(BucketFile(imageName, contentType.get, byteArray, Some(PUBLIC_READ)))
 
           //comment this is for error handling of s3
           /*result.map {
