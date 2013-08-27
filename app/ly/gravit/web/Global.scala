@@ -1,6 +1,7 @@
 package ly.gravit.web
 
 import play.api._
+import play.api.Play.current
 import ly.gravit.web.dao.parseapi.AccountDaoImpl
 import ly.gravit.web.auth.{Administrator, Account}
 
@@ -14,6 +15,9 @@ import ly.gravit.web.auth.{Administrator, Account}
 
 object Global extends GlobalSettings {
 
+  lazy val ADMIN_EMAIL = Play.application.configuration.getString("gravitly.admin.email").getOrElse(
+    throw new IllegalStateException("Admin email is required"))
+
   override def onStart(app: Application) {
     Logger.info("Gravitly Web has started")
 
@@ -21,7 +25,7 @@ object Global extends GlobalSettings {
       if (Logger.isDebugEnabled) {
         Logger.debug("Entering dev mode")
       }
-      //initDevMode
+      initDevMode
     }
   }
 
@@ -30,10 +34,10 @@ object Global extends GlobalSettings {
   }
 
   private def initDevMode = {
-    AccountDaoImpl.getByEmail("admin@gravitly.com") match {
+    AccountDaoImpl.getByEmail(ADMIN_EMAIL) match {
       case Some(account) => /* noop */
       case None => {
-        val admin = new Account(null, "ned@flanders.com", "password", "Ned Flanders", Administrator)
+        val admin = new Account(null, ADMIN_EMAIL, "password", ADMIN_EMAIL, Administrator)
         AccountDaoImpl.create(admin) match {
           case Some(id) => {
             if (Logger.isDebugEnabled) {

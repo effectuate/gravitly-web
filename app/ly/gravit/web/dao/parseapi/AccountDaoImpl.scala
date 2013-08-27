@@ -1,9 +1,17 @@
 package ly.gravit.web.dao.parseapi
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Await
+import scala.concurrent.duration._
+import play.api.Play
+import play.api.Play.current
 import ly.gravit.web.dao.AccountDao
-import ly.gravit.web.auth.Account
+import ly.gravit.web.auth.{Permission, Account}
 import ly.gravit.web.ParseApi
+import org.mindrot.jbcrypt.BCrypt
+import play.Logger
+import play.api.libs.json.JsObject
+import play.api.libs.Codecs
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,33 +21,68 @@ import ly.gravit.web.ParseApi
  * To change this template use File | Settings | File Templates.
  */
 object AccountDaoImpl extends AccountDao {
+  private lazy val PARSE_USER  = "_User"
+  private lazy val WS_TIMEOUT = Play.application.configuration.getInt("gravitly.ws.timeout").getOrElse(30)
 
-  override def authenticate(email: String, password: String) = {
+  override def authenticate(email: String, password: String): Option[Account] = {
+    //val pw =  BCrypt.hashpw(password, BCrypt.gensalt)
+    val pw = Codecs.md5(password.getBytes)
+    val req = ParseApi.authenticate(email,pw)
+    val res =  Await.result(req, WS_TIMEOUT seconds)
+
+    if (Logger.isDebugEnabled) {
+      Logger.debug("Authenticate: " + res.json)
+    }
+
+    if (res.status == 200) {
+      val result = res.json
+
+      return Option(Account(
+        (result \ "objectId").as[String],
+        (result\ "email").as[String],
+        null,
+        (result \ "username").as[String],
+        Permission.valueOf((result \ "permission").as[String])))
+    }
     None
   }
 
   override def getById(id: String) = {
     None
   }
-  // case class Account(id: String, email: String, password: String, name: String, permission: Permission)
+
   override def getByEmail(email: String): Option[Account] = {
-      ParseApi.find("_User", Map("email" -> "admin@gravitly.com")).map { res =>
-        if (res.status == 200) {
-          Option(Account(
-            (res.json \ "objectId").as[String],
-            (res.json \ "email").as[String],
-            null,
-            (res.json \ "username").as[String],
-            null
-          ))
-        } else {
-          None
-        }
+    val req = ParseApi.find(PARSE_USER, Map("email" -> email))
+    val res =  Await.result(req, WS_TIMEOUT seconds)
+
+    if(Logger.isDebugEnabled) {
+      Logger.debug("Account.getByEmail: " + res.status)
+    }
+    if (res.status == 200) {
+      (res.json \ "results").as[List[JsObject]].map { result =>
+        return Option(Account(
+          (result \ "objectId").as[String],
+          (result \ "email").as[String],
+          null,
+          (result \ "username").as[String],
+          Permission.valueOf((result \ "permission").as[String])
+        ))
       }
+    }
     None
   }
 
   override def create(account: Account): Option[String] = {
+    ParseApi.create(PARSE_USER, Map(
+      "email" -> account.email,
+      "password" -> BCrypt.hashpw(account.password, BCrypt.gensalt),
+      "username" -> account.email,
+      "permission" -> account.permission.toString
+    )).map { res =>
+      if (res.status == 200) {
+        return Option((res.json \ "objectId").as[String])
+      }
+    }
     None
   }
 }
