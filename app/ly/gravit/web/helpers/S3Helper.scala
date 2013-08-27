@@ -9,6 +9,7 @@ import java.util.UUID
 import fly.play.s3.BucketFile
 import scala.io.Source
 import fly.play.s3.PUBLIC_READ
+import ly.gravit.web.ParseApi
 
 
 
@@ -21,6 +22,7 @@ object S3Helper {
      source.close
      val imageName = S3Helper.generateFileName(mineType)
      println("image --> "+imageName)
+
      val result = S3Helper.bucket.add(BucketFile(imageName, mineType.get, byteArray, Some(PUBLIC_READ)))
    }
 
