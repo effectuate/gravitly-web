@@ -1,7 +1,7 @@
 package ly.gravit.web
 
-import play.api.Play.current
 import scala.concurrent.Future
+import play.api.Play.current
 import play.api.libs.ws._
 import play.api.Play
 import play.Logger
@@ -14,8 +14,9 @@ import play.Logger
  * To change this template use File | Settings | File Templates.
  */
 object ParseApi {
-  private lazy val PARSE_API_URL = "https://api.parse.com";
-  private lazy val PARSE_API_URL_CLASSES = "/1/classes/";
+  private lazy val PARSE_API_URL = "https://api.parse.com"
+  private lazy val PARSE_API_URL_CLASSES = "/1/classes/"
+  private lazy val PARSE_API_AUTH_URL = "/1/login"
   private lazy val PARSE_API_HEADER_APP_ID = "X-Parse-Application-Id"
   private lazy val PARSE_API_HEADER_REST_API_KEY = "X-Parse-REST-API-Key"
   private lazy val PARSE_API_HEADER_CONTENT_TYPE = "Content-Type"
@@ -26,6 +27,20 @@ object ParseApi {
     throw new IllegalStateException("Parse Rest API Key is required"))
 
   private def parseBaseUrl = "%s%s".format(PARSE_API_URL, PARSE_API_URL_CLASSES)
+
+  def authenticate(username: String, password: String) = {
+    val query = WS.url("%s%s".format(PARSE_API_URL, PARSE_API_AUTH_URL))
+      .withHeaders(PARSE_API_HEADER_APP_ID -> APP_ID)
+      .withHeaders(PARSE_API_HEADER_REST_API_KEY -> REST_API_KEY)
+      .withQueryString("username" -> username)
+      .withQueryString("password" -> password)
+
+    if (Logger.isDebugEnabled) {
+      Logger.debug("Find: " + query.url)
+    }
+
+    query.get
+  }
 
   def create(className: String, properties: Map[String, Any]) = {
     if (properties != null) {
@@ -43,7 +58,7 @@ object ParseApi {
         idx = idx + 1
       }
 
-      val query = WS.url("%s%s/%s".format(parseBaseUrl, className))
+      val query = WS.url("%s%s".format(parseBaseUrl, className))
         .withHeaders(PARSE_API_HEADER_APP_ID -> APP_ID)
         .withHeaders(PARSE_API_HEADER_REST_API_KEY -> REST_API_KEY)
         .withHeaders(PARSE_API_HEADER_CONTENT_TYPE -> CONTENT_TYPE_JSON)
@@ -90,7 +105,7 @@ object ParseApi {
       val query = WS.url("%s%s".format(parseBaseUrl, className))
         .withHeaders(PARSE_API_HEADER_APP_ID -> APP_ID)
         .withHeaders(PARSE_API_HEADER_REST_API_KEY -> REST_API_KEY)
-        .withQueryString("where" -> ",{%s}".format(reqParams.toString))
+        .withQueryString("where" -> "{%s}".format(reqParams.toString))
 
       if (Logger.isDebugEnabled) {
         Logger.debug("Find: " + query.url)

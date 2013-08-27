@@ -6,6 +6,7 @@ import ly.gravit.web.ParseApi
 import ly.gravit.web.Photo
 import java.text.SimpleDateFormat
 import util.Random
+import ly.gravit.web.dao.parseapi.AccountDaoImpl
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,14 +18,15 @@ import util.Random
 object Photos extends Controller {
 
   def index(id: String) = Action {
-    Async {
+    //Async {
       //ParseApi.get("_User", "XQa0OaRUET").map { res =>
-      ParseApi.find("_User", Map("email" -> "admin@gravitly.com")).map { res =>
-        Ok("JSON: " + res.json)
+      val res = AccountDaoImpl.getByEmail("admin@gravit.ly")
+      //ParseApi.find("_User", Map("email" -> "admin@gravit.ly")).map { res =>
+        //Ok("JSON: " + res.json)
         //Ok("ObjectId: " + (res.json \ "objectId").as[String])
-      }
-    }
-    //Ok(views.html.photo("Hello World"))
+      //}
+    //}
+    Ok(views.html.photos.photo(res.get.id))
   }
 
   def getMockPhotoGalleryGridView(id : String) = Action {

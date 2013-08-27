@@ -11,6 +11,7 @@ object ApplicationBuild extends Build {
     // Add your project dependencies here,
     jdbc,
     anorm,
+    "org.mindrot" % "jbcrypt" % "0.3m",
     "nl.rhinofly" %% "api-s3" % "3.1.0",
     "jp.t2v" %% "play2.auth"      % "0.10.1",
     "jp.t2v" %% "play2.auth.test" % "0.10.1" % "test"

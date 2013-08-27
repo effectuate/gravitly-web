@@ -32,10 +32,10 @@ object Admin extends Controller with AuthElement with AuthConfigImpl {
 
 
 
-  //def index = Action(AuthorityKey -> Administrator) { implicit request =>
-  def index = Action { implicit request =>
-    //Ok(admin.index(loggedIn))
-    Ok(admin.index(null))
+  def index = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  //def index = Action { implicit request =>
+    Ok(admin.index(loggedIn))
+    //Ok(admin.index(null))
 
   }
 
