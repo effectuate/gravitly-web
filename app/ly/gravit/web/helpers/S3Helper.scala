@@ -11,19 +11,19 @@ import scala.io.Source
 import fly.play.s3.PUBLIC_READ
 
 
-class S3Helper(image: File, mineType: Option[String]) {
-  def upload() = {
-    val source = Source.fromFile(image)(scala.io.Codec.ISO8859)
-    val byteArray = source.map(_.toByte).toArray
-    source.close
-    val imageName = S3Helper.generateFileName(mineType)
-    val result = S3Helper.bucket.add(BucketFile(imageName, mineType.get, byteArray, Some(PUBLIC_READ)))
-  }
-}
+
 
 object S3Helper {
 
-   def apply(image: File, mineType: Option[String]) = new S3Helper(image, mineType)
+   def S3Uploader(image: File, mineType: Option[String]) {
+     val source = Source.fromFile(image)(scala.io.Codec.ISO8859)
+     val byteArray = source.map(_.toByte).toArray
+     source.close
+     val imageName = S3Helper.generateFileName(mineType)
+     println("image --> "+imageName)
+     val result = S3Helper.bucket.add(BucketFile(imageName, mineType.get, byteArray, Some(PUBLIC_READ)))
+   }
+
 
     private val config = play.api.Play.current.configuration
     private val bucketName = config.getString("s3.uploads.bucket").get
