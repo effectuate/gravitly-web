@@ -12,6 +12,8 @@ GET     /logout                     controllers.Application.logout
 POST    /authenticate               controllers.Application.authenticate
 
 GET     /photos/:id                 controllers.Photos.index(id: String)
+GET     /photos/grid_view/:id       controllers.Photos.getMockPhotoGalleryGridView(id : String)
+GET     /photos/scroll_view/:id     controllers.Photos.getMockPhotoGalleryScrollView(id : String)
 GET     /sitemap.xml                controllers.SiteMap.index
 
 GET     /admin                      controllers.Admin.index
