@@ -1,8 +1,8 @@
 package controllers
 
-import play.api._
+import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.mvc._
-import dynobjx.play.parseapi.ParseApi
+import ly.gravit.web.ParseApi
 import ly.gravit.web.Photo
 import java.text.SimpleDateFormat
 import util.Random
@@ -17,15 +17,22 @@ import util.Random
 object Photos extends Controller {
 
   def index(id: String) = Action {
-    ParseApi.get("User", "Ij8j7HtrxC")
-
-    Ok(views.html.photos.photo("Hello World!"))
+    Async {
+      //ParseApi.get("_User", "XQa0OaRUET").map { res =>
+      ParseApi.find("_User", Map("email" -> "admin@gravitly.com")).map { res =>
+        Ok("JSON: " + res.json)
+        //Ok("ObjectId: " + (res.json \ "objectId").as[String])
+      }
+    }
+    //Ok(views.html.photo("Hello World"))
   }
 
   def getMockPhotoGalleryGridView(id : String) = Action {
     ParseApi.get("User", "Ij8j7HtrxC")
     Ok(views.html.photos.grid(mockPhotoGalleryGridView.toString))
+
   }
+
   def getMockPhotoGalleryScrollView(id : String) = Action {
       ParseApi.get("User", "Ij8j7HtrxC")
       Ok(views.html.photos.scroll(mockPhotoGalleryScrollView.toString))

@@ -13,4 +13,5 @@ trait AccountDao {
   def authenticate(email: String, password: String): Option[Account]
   def getById(id: String): Option[Account]
   def create(account: Account): Option[String]
+  def getByEmail(email: String): Option[Account];
 }
