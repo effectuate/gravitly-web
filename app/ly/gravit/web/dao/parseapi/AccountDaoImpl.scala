@@ -3,12 +3,12 @@ package ly.gravit.web.dao.parseapi
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.language.postfixOps
 import play.api.Play
 import play.api.Play.current
 import ly.gravit.web.dao.AccountDao
 import ly.gravit.web.auth.{Permission, Account}
 import ly.gravit.web.ParseApi
-import org.mindrot.jbcrypt.BCrypt
 import play.Logger
 import play.api.libs.json.JsObject
 import play.api.libs.Codecs
@@ -75,7 +75,7 @@ object AccountDaoImpl extends AccountDao {
   override def create(account: Account): Option[String] = {
     ParseApi.create(PARSE_USER, Map(
       "email" -> account.email,
-      "password" -> BCrypt.hashpw(account.password, BCrypt.gensalt),
+      "password" -> Codecs.md5(account.password.getBytes),
       "username" -> account.email,
       "permission" -> account.permission.toString
     )).map { res =>
