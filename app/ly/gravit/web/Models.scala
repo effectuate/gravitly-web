@@ -1,4 +1,4 @@
 package ly.gravit.web
-
-case class Photo(id: String, caption: String)
+import java.util.Date
+case class Photo(id: String, caption: String, date: Date)
 case class UploadPhoto(imageName : String)
