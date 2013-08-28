@@ -1,0 +1,405 @@
+/* reseters */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* end of reseters */
+
+
+/* 
+	
+	instancesiator
+
+*/
+
+@fontURI:"/assets/fonts";
+@arialFont:Arial, Helvetica, sans-serif;
+
+
+/*
+@font-face
+{
+font-family: 'Roboto';
+src: url('@{fontURI}/RobotoCondensed-Regular.ttf');
+}
+*/
+/*@font-face
+{
+font-family: 'Helvetica';
+src: url('@{fontURI}/helvetica-neue.ttf');
+}
+*/
+
+
+@font-face
+{
+font-family: 'qsB';
+    src: url('@{fontURI}/quicksand_bold-webfont.eot');
+    src: url('@{fontURI}/quicksand_bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('@{fontURI}/quicksand_bold-webfont.woff') format('woff'),
+         url('@{fontURI}/quicksand_bold-webfont.ttf') format('truetype'),
+         url('@{fontURI}/quicksand_bold-webfont.svg#QuicksandBoldRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
+/*
+	end of instancesiator
+
+
+*/
+
+body,html {
+	background: #e3e7e8;
+	height: 100%;
+	font-family: Helvetica;
+}
+
+.main-nav {
+	background: #1a1a1a;
+	height: 40px;
+	border-bottom:5px solid #2e2e2e;
+}
+
+.profile {
+	position: relative;
+	height: 150px;
+	background: #fff;
+	border-bottom:3px solid #bdbfbe;
+}
+
+
+.profile-info-wrapper {
+	height: 100%;
+	margin: 0 auto;
+	position: relative;
+	width: 920px;
+
+	.badges{
+		position: relative;
+		top: 110px;
+		left: 145px
+	}
+
+
+}
+
+.avatar-container {
+	left:15px;
+	top:20px;
+	position: absolute;
+
+	img {
+		-webkit-border-radius: 50px;
+		-moz-border-radius: 50px;
+		border-radius:50px;
+		border-radius: 50px;
+		border: 1px solid #bdc3c7;
+	}
+}
+
+.description-container {
+	left: 145px;
+	position: absolute;
+	top:20px;
+	width: 620px;
+	text-align: left;
+	display: block;
+		h1{
+			font-family: Roboto;
+			font-style: normal;
+  			font-size: 24px;
+			text-align: left;
+			margin: 0px 0px 10px auto;
+		}
+
+		p {
+			font-size: 15px;
+			color: #666666;
+			text-align: left;
+		}
+}
+
+.post-count-container {
+	border-left:2px solid #ecf0f1;
+	left: 805px;
+	position: absolute;
+	top:20px;
+	width: 100px;
+	height: 115px;
+	text-align: center;
+	.number-post{
+		margin: 38px;
+		font-size: 22px;
+		font-family: Helvetica Neue;
+		color:#1a1a1a;
+	}
+
+	p {
+		overflow: visible;
+		font-size: 15px;
+		font-family: Helvetica Neue;
+	}
+}
+
+.accent {
+	background-image: url("../images/accent.png");
+	width: 660px;
+}
+
+.switcher {
+	background:#edeae3;
+	padding: 20px 0px 20px 0px;
+}
+
+.content {
+	height: 100%;
+	background: #edeae3;
+}
+
+.content-container {
+	margin: 0; 
+	height: 100%;
+	min-height: 100%;
+
+}
+
+.post-container {
+	padding: 40px;
+	background: #edeae3;
+}
+
+.post {
+	width: 650px;
+
+	margin: 0px auto;
+}
+
+.post-owner {
+
+	.owner-container {
+		width: 450px;
+		float: left;
+	}
+
+
+	.owner-avatar {
+		float: left;
+		margin: 5px 20px 0px 0px;
+			img {
+				-webkit-border-radius: 50px;
+				-moz-border-radius: 50px;
+				border-radius:50px;
+				border: 1px solid #bdc3c7		
+			}
+
+
+	}
+
+	.owner {
+		margin-bottom: 65px;
+	}
+
+	.badge {
+
+	}
+
+	.owner-name {
+			font-family: 'Roboto Condensed';
+			font-style: normal;
+  			font-size: 24px;
+			text-align: left;
+			margin-bottom: 9px;
+	}
+
+	.owner-location {
+		color:#2980b9;
+		font-size: 14px;
+		margin-top: 16px;
+	}
+
+}
+
+.post-image {
+	box-shadow: 0px 0px 2px #888888;
+	-moz-box-shadow: 0px 0px 2px #888888;
+	-webkit-box-shadow: 0px 0px 2px #888888;
+	margin:10px 0px 20px 0px;
+	border:20px solid #fff;
+}
+
+.post-description {
+	color: #1a1a1a;
+	font-size: 18px;
+	.hashtags{
+		color:#2980b9;
+	}
+}
+
+.post-details{
+	margin: 10px 0px 0px 0px;
+	.details {
+		color: red;
+		width: 400px;
+		float: left;
+	}
+
+	.share-post {
+		color:blue;
+		
+	}
+
+	.post-geolocation {
+		color:#2980b9;
+		font-family: Myriad Pro;
+		font-size: 14px;
+	}
+
+	.post-timestamp {
+		color: #666666;
+		font-family: Myriad Pro;
+		font-size: 14px;
+	}
+
+}
+
+.link {
+	color: #2980b9;
+	font-size: 15px;
+}
+
+.icon-blue-location {
+	width: 18px;
+	height: 21px;
+	background-position: -61px -61px;
+	float: left;
+	background-image: url("../images/gravitly-icon.png");
+}
+
+.icon-white-grid {
+	width: 35px;
+	height: 31px;
+	background-position: -6px -11px;
+	float: left;
+	background-image: url("../images/gravitly-icon.png");
+}
+
+.icon-white-list {
+	width: 37px;
+	height: 31px;
+	background-position: -8px -96px;
+	float: left;
+	background-image: url("../images/gravitly-icon.png");
+}
+
+.icon-white-map {
+	width: 35px;
+	height: 31px;
+	background-position: -6px -56px;
+	float: left;
+	background-image: url("../images/gravitly-icon.png");
+}
+
+
+
+.icon-gray-compass {
+	width: 18px;
+	height: 14px;
+	background-position: -104px -64px;
+	float: left;
+	background-image: url("../images/gravitly-icon.png");
+}
+
+.icon-gray-time {
+	width: 18px;
+	height: 14px;
+	background-position: -105px -21px;
+	float: left;
+	background-image: url("../images/gravitly-icon.png");
+}
+
+.timestamp-container{
+	margin-top: 10px;
+}
+
+.switcher-utl{
+	margin-left: 30px;
+	position: absolute;
+		ul {
+			background: #3498db;
+			width: 130px;
+			height: 35px;
+			-webkit-border-radius: 5px;
+			-moz-border-radius: 5px;
+			border-radius: 5px;
+			list-style: none;
+			line-height: normal;
+			text-align: center;
+		}
+		
+		li {
+			margin-left: 5px;
+			display:inline;
+			a {
+				padding: 0px 26px 15px 14px;
+				text-decoration: none;
+			}
+			a:hover {
+				opacity:0.4;
+				background:#2980b9;
+			}
+		}
+
+	.arrow-down{
+		border-top-color: #292929;
+		margin: 0 auto;
+		width: 0;
+		height: 0;
+		border-top: 12px solid #3498db;
+		border-left: 12px solid transparent;
+		border-right: 12px solid transparent;
+	}
+}
