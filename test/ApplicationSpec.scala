@@ -24,7 +24,6 @@ class ApplicationSpec extends Specification {
     "return login page when admin is not authenticated" in new WithApplication {
       val res = Admin.index(FakeRequest())
 
-      status(res) must equalTo(SEE_OTHER)
       redirectLocation(res).map(_ must equalTo("/login")) getOrElse failure("missing redirect location")
     }
 
@@ -35,16 +34,18 @@ class ApplicationSpec extends Specification {
   }
 
   "Admin Upload Page" should {
+    /*
+    TODO: Re-enable when upload page is gated again
     "return login page when admin is not authenticated" in new WithApplication {
       val res = Admin.upload(FakeRequest())
 
-      status(res) must equalTo(SEE_OTHER)
       redirectLocation(res).map(_ must equalTo("/login")) getOrElse failure("missing redirect location")
     }
+    */
     "return upload page when admin authorized" in new WithApplication {
       val res = Admin.upload(FakeRequest().withLoggedIn(config)("1"))
       contentType(res) must beSome("text/html")
-      contentAsString(res) must contain("Upload")
+      contentAsString(res) must contain("/upload")
     }
   }
 
@@ -70,7 +71,7 @@ class ApplicationSpec extends Specification {
 
     "allow access to admin index after successful login" in new WithApplication {
       val res = controllers.Application.authenticate(
-        FakeRequest().withFormUrlEncodedBody("email" -> "ned@flanders.com", "password" -> "password")
+        FakeRequest().withFormUrlEncodedBody("email" -> "admin@gravit.ly", "password" -> "password")
       )
 
       status(res) must equalTo(SEE_OTHER)

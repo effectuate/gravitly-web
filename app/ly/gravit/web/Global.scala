@@ -19,7 +19,9 @@ object Global extends GlobalSettings {
     throw new IllegalStateException("Admin email is required"))
 
   override def onStart(app: Application) {
-    Logger.info("Gravitly Web has started")
+    if (Logger.isDebugEnabled) {
+      //Logger.debug("Gravitly Web has started")
+    }
 
     if (Play.isDev(Play.current)) {
       if (Logger.isDebugEnabled) {
@@ -30,7 +32,9 @@ object Global extends GlobalSettings {
   }
 
   override def onStop(app: Application) {
-    Logger.info("Gravitly Web shut down...")
+    if (Logger.isDebugEnabled) {
+      //Logger.debug("Gravitly Web shut down...")
+    }
   }
 
   private def initDevMode = {
