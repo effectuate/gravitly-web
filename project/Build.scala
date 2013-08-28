@@ -18,6 +18,9 @@ object ApplicationBuild extends Build {
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
     resolvers += "Rhinofly Internal Repository" at "http://maven-repository.rhinofly.net:8081/artifactory/libs-release-local"
+
   )
+
+
 
 }
