@@ -34,9 +34,9 @@ object Admin extends Controller with AuthElement with AuthConfigImpl  {
   }
 
   val uploadForm : Form [UploadPhoto] = Form(
-  mapping(
-    "imageName" -> text
-  )(UploadPhoto.apply)(UploadPhoto.unapply)
+    mapping(
+      "imageName" -> text
+    )(UploadPhoto.apply)(UploadPhoto.unapply)
   )
 
   def submitUpload = Action(parse.multipartFormData) { implicit request =>

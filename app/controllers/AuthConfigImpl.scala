@@ -6,6 +6,7 @@ import play.api.mvc.Results._
 import play.api.Play._
 import scala.reflect.{ClassTag, classTag}
 import jp.t2v.lab.play2.auth.AuthConfig
+import ly.gravit.web.dao.parseapi.AccountDaoImpl
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,7 +58,7 @@ trait AuthConfigImpl extends AuthConfig {
    * A function that returns a `User` object from an `Id`.
    * You can alter the procedure to suit your application.
    */
-  def resolveUser(id: Id): Option[User] = Account.findById(id)
+  def resolveUser(id: Id): Option[User] = AccountDaoImpl.getByEmail(id)
 
   /**
    * Where to redirect the user after a successful login.
@@ -99,5 +100,4 @@ trait AuthConfigImpl extends AuthConfig {
    * However default is false, I strongly recommend using true in a production.
    */
   override lazy val cookieSecureOption: Boolean = play.api.Play.current.configuration.getBoolean("auth.cookie.secure").getOrElse(true)
-
 }

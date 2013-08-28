@@ -95,7 +95,7 @@ object ParseApi {
         .withHeaders(PARSE_API_HEADER_REST_API_KEY -> REST_API_KEY)
 
       if (Logger.isDebugEnabled) {
-        Logger.debug("Find: " + query.url)
+        Logger.debug("Get: " + query.url)
       }
 
       query.get

@@ -1,7 +1,6 @@
 package test
 
 import org.specs2.mutable._
-
 import play.api.test._
 import play.api.test.Helpers._
 import controllers._
@@ -28,7 +27,7 @@ class ApplicationSpec extends Specification {
     }
 
     "return admin index when admin is authorized" in new WithApplication {
-      val res = Admin.index(FakeRequest().withLoggedIn(config)("1"))
+      val res = Admin.index(FakeRequest().withLoggedIn(config)("admin@gravit.ly"))
       contentType(res) must beSome("text/html")
     }
   }
@@ -43,7 +42,7 @@ class ApplicationSpec extends Specification {
     }
     */
     "return upload page when admin authorized" in new WithApplication {
-      val res = Admin.upload(FakeRequest().withLoggedIn(config)("1"))
+      val res = Admin.upload(FakeRequest().withLoggedIn(config)("admin@gravit.ly"))
       contentType(res) must beSome("text/html")
       contentAsString(res) must contain("/upload")
     }
