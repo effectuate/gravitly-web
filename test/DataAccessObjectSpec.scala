@@ -1,3 +1,4 @@
+package test
 
 import java.util.UUID
 import ly.gravit.web.auth.Account

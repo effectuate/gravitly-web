@@ -20,6 +20,7 @@ object ParseApi {
   private lazy val PARSE_API_HEADER_APP_ID = "X-Parse-Application-Id"
   private lazy val PARSE_API_HEADER_REST_API_KEY = "X-Parse-REST-API-Key"
   private lazy val PARSE_API_HEADER_CONTENT_TYPE = "Content-Type"
+  private lazy val PARSE_API_HEADER_SESSION = "X-Parse-Session-Token"
   private lazy val CONTENT_TYPE_JSON = "application/json"
   private lazy val APP_ID = Play.application.configuration.getString("parseapi.app.id").getOrElse(
     throw new IllegalStateException("Parse App ID is required"))
@@ -27,6 +28,23 @@ object ParseApi {
     throw new IllegalStateException("Parse Rest API Key is required"))
 
   private def parseBaseUrl = "%s%s".format(PARSE_API_URL, PARSE_API_URL_CLASSES)
+
+  def delete(className: String, objectId: String)(implicit sessionToken: String) = {
+    if (objectId != null) {
+      val query = WS.url("%s%s/%s".format(parseBaseUrl, className, objectId))
+        .withHeaders(PARSE_API_HEADER_APP_ID -> APP_ID)
+        .withHeaders(PARSE_API_HEADER_REST_API_KEY -> REST_API_KEY)
+        .withHeaders(PARSE_API_HEADER_SESSION -> sessionToken)
+
+      if (Logger.isDebugEnabled) {
+        Logger.debug("Delete: " + query.url)
+      }
+
+      query.delete
+    } else {
+      throw new IllegalStateException("Get methods must have an object id")
+    }
+  }
 
   def authenticate(username: String, password: String) = {
     val query = WS.url("%s%s".format(PARSE_API_URL, PARSE_API_AUTH_URL))

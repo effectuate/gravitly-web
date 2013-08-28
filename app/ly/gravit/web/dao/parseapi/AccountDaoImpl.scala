@@ -79,7 +79,7 @@ object AccountDaoImpl extends AccountDao {
       "username" -> account.email,
       "permission" -> account.permission.toString
     )).map { res =>
-      if (res.status == 200) {
+      if (res.status == 201) {
         return Option((res.json \ "objectId").as[String])
       }
     }
