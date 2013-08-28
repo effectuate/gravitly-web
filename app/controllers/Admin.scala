@@ -30,6 +30,7 @@ object Admin extends Controller with AuthElement with AuthConfigImpl  {
 
   //def upload = StackAction(AuthorityKey -> Administrator) { implicit request =>
   def upload = Action { implicit request =>
+
     Ok(admin.upload(uploadForm))
   }
 
@@ -49,6 +50,5 @@ object Admin extends Controller with AuthElement with AuthConfigImpl  {
      }
      case None => Ok("File Error")
     }
-
-}
+  }
 }
