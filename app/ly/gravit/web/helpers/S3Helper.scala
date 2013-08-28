@@ -23,6 +23,7 @@ object S3Helper {
      val imageName = S3Helper.generateFileName(mineType)
      println("image --> "+imageName)
 
+      ParseApi.create("Photos",Map("caption" -> imageName, "length" -> 200, "height" -> 200))
      val result = S3Helper.bucket.add(BucketFile(imageName, mineType.get, byteArray, Some(PUBLIC_READ)))
    }
 
