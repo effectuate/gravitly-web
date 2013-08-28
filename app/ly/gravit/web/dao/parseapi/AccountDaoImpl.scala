@@ -29,7 +29,7 @@ object AccountDaoImpl extends AccountDao {
     val res =  Await.result(req, WS_TIMEOUT seconds)
 
     if (Logger.isDebugEnabled) {
-      Logger.debug("Authenticate: " + res.json)
+      Logger.debug("Authenticate: " + res.status)
     }
 
     if (res.status == 200) {
