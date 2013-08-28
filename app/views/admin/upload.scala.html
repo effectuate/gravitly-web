@@ -1,10 +1,17 @@
-@(form: Form[ly.gravit.web.UploadPhoto])
 
-@main("upload image") {
-@helper.form(routes.Admin.submitUpload, 'enctype -> "multipart/form-data" ) {
+@(form: Form[(String, Int, Int)])
 
-<input type="file" name="imageName" id="file">
+@main("Photo Upload") {
+  <h1>Photo Upload</h1>
+  @helper.form(routes.Admin.postUpload, 'enctype -> "multipart/form-data" ) {
+    <input type="text" name="caption" placeholder="Caption">
+    <br>
+    <input type="text" name="width" placeholder="Width">
+    <input type="text" name="height" placeholder="Height">
+    <br>
+    <input type="file" name="image" id="file">
 
-<button type="submit">SUBMIT</button>
-    }
+    <p><button type="submit">Upload</button></p>
+  }
+
 }
