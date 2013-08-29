@@ -218,7 +218,18 @@ body,html {
 
 	margin: 0px auto;
 }
+.owner-avatar {
+		float: left;
+		margin: 5px 20px 0px 0px;
+			img {
+				-webkit-border-radius: 50px;
+				-moz-border-radius: 50px;
+				border-radius:50px;
+				border: 1px solid #bdc3c7
+			}
 
+
+	}
 .post-owner {
 
 	.owner-container {
@@ -227,18 +238,7 @@ body,html {
 	}
 
 
-	.owner-avatar {
-		float: left;
-		margin: 5px 20px 0px 0px;
-			img {
-				-webkit-border-radius: 50px;
-				-moz-border-radius: 50px;
-				border-radius:50px;
-				border: 1px solid #bdc3c7		
-			}
 
-
-	}
 
 	.owner {
 		margin-bottom: 65px;
@@ -430,13 +430,14 @@ body,html {
 
 		.photo {
 			width: 50%;
+			float:left;
 		}
 
 		.photo-content {
-			width: 50%;
+			height:306px;
 		}
 	}
-   
+
     .head-logo{
       width:144px;
       height:33px;
@@ -445,4 +446,11 @@ body,html {
       background-repeat:no-repeat;
       background-position: 0px 5px;
       background-image: url("../images/gravitly-head-logo.png");
+    }
+
+
+    .photo-description{
+        height:65px;
+        border:1px #000 solid;
+
     }
