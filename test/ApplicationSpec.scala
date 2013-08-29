@@ -50,7 +50,7 @@ class ApplicationSpec extends Specification {
 
   "Photos Page" should {
     "return a photo" in new WithApplication {
-      val res = Photos.index("123")(FakeRequest())
+      val res = Photos.index("RNJrxCys09")(FakeRequest())
 
       contentType(res) must beSome("text/html")
       status(res) must equalTo(OK)

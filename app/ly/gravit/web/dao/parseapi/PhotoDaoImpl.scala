@@ -1,11 +1,14 @@
 package ly.gravit.web.dao.parseapi
 
-import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.language.postfixOps
+import scala.concurrent.{Future, Await}
 import scala.concurrent.duration._
 import play.api.Play
 import play.api.Play.current
 import ly.gravit.web.dao.PhotoDao
 import ly.gravit.web.{ParseApi, Photo}
+import play.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +23,8 @@ object PhotoDaoImpl extends PhotoDao {
 
   override def create(photo: Photo): Option[String] = {
     val req = ParseApi.create(PARSE_PHOTO, Map(
-      "caption" -> photo.caption
+      "caption" -> photo.caption,
+      "filename" -> photo.filename
     ))
     val res =  Await.result(req, WS_TIMEOUT seconds)
 
@@ -29,5 +33,27 @@ object PhotoDaoImpl extends PhotoDao {
     }
 
     None
+  }
+
+  override def getById(id: String): Option[Photo] = {
+      var opt: Option[Photo] = None
+      val req = ParseApi.get(PARSE_PHOTO, id)
+      val res = Await.result(req, WS_TIMEOUT seconds)
+      //ParseApi.get(PARSE_PHOTO, id).map { res =>
+        if(Logger.isDebugEnabled) {
+          Logger.debug("GET /photos/%s [%s]".format(id, res.status))
+        }
+
+        if (res.status == 200) {
+          val json = res.json
+          opt = Option(Photo(
+            (json \ "objectId").as[String],
+            (json \ "caption").as[String],
+            (json \ "filename").as[String]
+          ))
+        }
+      //}
+
+      opt
   }
 }

@@ -2,11 +2,8 @@ package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.mvc._
-import ly.gravit.web.ParseApi
-import ly.gravit.web.Photo
-import java.text.SimpleDateFormat
-import util.Random
-import ly.gravit.web.dao.parseapi.AccountDaoImpl
+import play.Play
+import ly.gravit.web.{ParseApiConnectivity, Photo}
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,57 +12,39 @@ import ly.gravit.web.dao.parseapi.AccountDaoImpl
  * Time: 12:52 PM
  * To change this template use File | Settings | File Templates.
  */
-object Photos extends Controller {
+object Photos extends Controller with ParseApiConnectivity {
+  private lazy val IMAGE_SERVER_URL = Play.application.configuration.getString("image.server.url")
+  private lazy val BASE_IMAGE_URI = Play.application.configuration.getString("s3.uploads.bucket")
+  implicit val imagePath = "%s/%s".format(IMAGE_SERVER_URL, BASE_IMAGE_URI)
 
+  /*
+    Retaining this for posterity; old, 'modular', asynchronous way of retrieving data from a web service.
+
+    def index(id: String) = Action {
+      Async {
+        for {
+          photo <- Future{ PhotoDaoImpl.getById(id) }
+        } yield {
+          Ok(views.html.photos.photo(photo))
+        }
+      }
+    }
+
+    New index() represents the Play 2.0 way of doing things
+  */
   def index(id: String) = Action {
-    //Async {
-      //ParseApi.get("_User", "XQa0OaRUET").map { res =>
-      val res = AccountDaoImpl.getByEmail("admin@gravit.ly")
-      //ParseApi.find("_User", Map("email" -> "admin@gravit.ly")).map { res =>
-        //Ok("JSON: " + res.json)
-        //Ok("ObjectId: " + (res.json \ "objectId").as[String])
-      //}
-    //}
-    Ok(views.html.photos.photo(res.get.id))
-  }
 
-  def getMockPhotoGalleryGridView(id : String) = Action {
-    ParseApi.get("User", "Ij8j7HtrxC")
-    Ok(views.html.photos._grid(mockPhotoGalleryGridView.toString))
+    val query = parseApiConnect("Photo", Option(id))
 
-  }
-
-  def getMockPhotoGalleryScrollView(id : String) = Action {
-      ParseApi.get("User", "Ij8j7HtrxC")
-      Ok(views.html.photos._scroll(mockPhotoGalleryScrollView.toString))
+    Async{
+      query.get.map { res =>
+        val photo = Option(Photo(
+          (res.json \ "objectId").as[String],
+          (res.json \ "caption").as[String],
+          (res.json \ "filename").as[String]
+        ))
+        Ok(views.html.photos.photo(photo))
+      }
     }
-
-  def mockPhotoGalleryGridView() =  {
-  val date = new SimpleDateFormat("yyyy/MM/dd")
-  Seq(
-    Photo(Random.nextInt(1234567).toString,"caption1",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-    Photo(Random.nextInt(1234567).toString,"caption2",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-    Photo(Random.nextInt(1234567).toString,"caption3",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-    Photo(Random.nextInt(1234567).toString,"caption4",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-    Photo(Random.nextInt(1234567).toString,"caption5",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-    Photo(Random.nextInt(1234567).toString,"caption6",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-    Photo(Random.nextInt(1234567).toString,"caption7",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-    Photo(Random.nextInt(1234567).toString,"caption8",date.parse("2013/03/" + (Random.nextInt(29) + 1)))
-  )
-
   }
-  def mockPhotoGalleryScrollView() =  {
-    val date = new SimpleDateFormat("yyyy/MM/dd")
-    Seq(
-      Photo(Random.nextInt(1234567).toString,"caption1",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-      Photo(Random.nextInt(1234567).toString,"caption2",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-      Photo(Random.nextInt(1234567).toString,"caption3",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-      Photo(Random.nextInt(1234567).toString,"caption4",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-      Photo(Random.nextInt(1234567).toString,"caption5",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-      Photo(Random.nextInt(1234567).toString,"caption6",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-      Photo(Random.nextInt(1234567).toString,"caption7",date.parse("2013/03/" + (Random.nextInt(29) + 1))),
-      Photo(Random.nextInt(1234567).toString,"caption8",date.parse("2013/03/" + (Random.nextInt(29) + 1)))
-    )
-
-    }
 }
