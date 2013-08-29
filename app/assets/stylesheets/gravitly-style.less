@@ -436,9 +436,23 @@ body,html {
 .solo-photo-container {
 	background: white;
 	margin: 40px 0px 40px 0px;
-	padding: 20px;
-	width: 100%;
+	padding: 30px;
 	border: 1px solid #d0d0d0;
+	box-shadow: 0px 0px 8px #888888;
+	-moz-box-shadow: 0px 0px 8px #888888;
+	-webkit-box-shadow: 0px 0px 8px #888888;
+
+		h1 {
+			color: #3f729b;
+			font-weight: 900;
+			font-size: 18px;
+		}
+
+		.owner-location {
+			margin-top: 5px;
+			color: #aaaaaa;
+			font-weight: bold;
+		}
 
 		.photo {
 			width: 50%;
@@ -447,7 +461,29 @@ body,html {
 
 		.photo-content {
 			height:306px;
+
+				.solo-photo-owner{
+					height: 70px;
+				}
+
+				.solo-description {
+					text-align: left;
+					display: block;
+				}
 		}
+
+		.post-description {
+			margin-top: 20px;
+			color: #1a1a1a;
+			font-size: 18px;
+			font-family: 'Helvetica';
+			.hashtag{
+				color:#2980b9;
+
+			}
+}
+
+
 	}
 
     .head-logo{
@@ -460,4 +496,6 @@ body,html {
       background-image: url("../images/gravitly-head-logo.png");
     }
 
-
+.image-name {
+	margin-top: 10px;
+}
