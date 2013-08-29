@@ -4,7 +4,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.mvc._
 import play.Play
 import ly.gravit.web.{ParseApiConnectivity, Photo}
-import play.api.libs.json.JsObject
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,18 +33,15 @@ object Photos extends Controller with ParseApiConnectivity {
     New index() represents the Play 2.0 way of doing things
   */
   def index(id: String) = Action {
-    val query = parseApiConnect("Photo")
+    val query = parseApiConnect("Photo", Option(id))
 
     Async{
       query.get.map { res =>
-        var photo: Option[Photo] = null
-          (res.json \ "results").as[List[JsObject]].map { result =>
-            photo = Option(Photo(
-              (result \ "objectId").as[String],
-              (result \ "caption").as[String],
-              (result \ "filename").as[String]
-          ))
-        }
+        val photo = Option(Photo(
+          (res.json \ "objectId").as[String],
+          (res.json \ "caption").as[String],
+          (res.json \ "filename").as[String]
+        ))
         Ok(views.html.photos.photo(photo))
       }
     }
