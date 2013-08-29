@@ -31,13 +31,13 @@ object Photos extends Controller {
 
   def getMockPhotoGalleryGridView(id : String) = Action {
     ParseApi.get("User", "Ij8j7HtrxC")
-    Ok(views.html.photos.grid(mockPhotoGalleryGridView.toString))
+    Ok(views.html.photos._grid(mockPhotoGalleryGridView.toString))
 
   }
 
   def getMockPhotoGalleryScrollView(id : String) = Action {
       ParseApi.get("User", "Ij8j7HtrxC")
-      Ok(views.html.photos.scroll(mockPhotoGalleryScrollView.toString))
+      Ok(views.html.photos._scroll(mockPhotoGalleryScrollView.toString))
     }
 
   def mockPhotoGalleryGridView() =  {

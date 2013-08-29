@@ -1,7 +1,7 @@
 
 @(form: Form[(String, Int, Int)])
 
-@main("Photo Upload") {
+
   <h1>Photo Upload</h1>
   @helper.form(routes.Admin.postUpload, 'enctype -> "multipart/form-data" ) {
     <input type="text" name="caption" placeholder="Caption">
@@ -14,4 +14,4 @@
     <p><button type="submit">Upload</button></p>
   }
 
-}
+
