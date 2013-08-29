@@ -1,7 +1,10 @@
 @(user: ly.gravit.web.auth.Account)
 
 @main("Gravitly Admin") {
-  Hello @user.permission!
+  <h3>Hello @user.permission!</h3>
   <br>
-  <a href="/admin/upload">Photo Upload</a>
+  <a href="/admin/upload">Upload a Photo</a>
+  <p>
+    <a href="/logout">Log out</a>
+  </p>
 }

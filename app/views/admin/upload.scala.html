@@ -3,14 +3,15 @@
 
 @main("Photo Upload") {
   <h1>Photo Upload</h1>
+
   @helper.form(routes.Admin.postUpload, 'enctype -> "multipart/form-data" ) {
-    <input type="text" name="caption" placeholder="Caption">
+    <input type="text" name="caption" placeholder="Caption" size="30">
     <br>
     <input type="text" name="width" placeholder="Width">
     <input type="text" name="height" placeholder="Height">
     <br>
     <input type="file" name="image" id="file">
-
+    <br>
     <p><button type="submit">Upload</button></p>
   }
 }
