@@ -1,5 +1,5 @@
 
-@(form: Form[(String, Int, Int)])
+@(form: Form[(String, Int, Int, String, String)])
 
 @main("Photo Upload") {
   <h1>Photo Upload</h1>
@@ -9,6 +9,20 @@
     <br>
     <input type="text" name="width" placeholder="Width">
     <input type="text" name="height" placeholder="Height">
+    <br>
+    <select name="location">
+      <option value="-1">[ Select Location ]</option>
+      <option value="i1RFAYwlhR">Alpine Meadows</option>
+      <option value="u6ffhvdZJH">Heavenly Mountain Resort</option>
+      <option value="6LgLd9jODw">Squaw Valley</option>
+    </select>
+    <br>
+    <select name="category">
+      <option value="-1">[ Select Sport ]</option>
+      <option value="rph0ovXefp">Snow</option>
+      <option value="P0QlFETikE">Trail</option>
+      <option value="uoabsxZmSB">Wind</option>
+    </select>
     <br>
     <input type="file" name="image" id="file">
     <br>

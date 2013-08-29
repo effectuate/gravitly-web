@@ -25,10 +25,12 @@ object PhotoDaoImpl extends PhotoDao {
     val req = ParseApi.create(PARSE_PHOTO, Map(
       "caption" -> photo.caption,
       "filename" -> photo.filename,
-      "user" -> photo.userId
+      "user" -> photo.userId,
+      "location" -> photo.locationId
     ))
-    val res =  Await.result(req, WS_TIMEOUT seconds)
 
+    val res =  Await.result(req, WS_TIMEOUT seconds)
+    println("### result: " + res.status + " | " +res.json)
     if (res.status == 201) {
       val objectId = (res.json \ "objectId").as[String]
 
@@ -56,7 +58,9 @@ object PhotoDaoImpl extends PhotoDao {
         (json \ "objectId").as[String],
         (json \ "caption").as[String],
         (json \ "filename").as[String],
-        (json \ "user").as[String]
+        (json \ "user").as[String],
+        (json \ "location").as[String],
+        (json \ "category").as[String]
       ))
     }
     opt

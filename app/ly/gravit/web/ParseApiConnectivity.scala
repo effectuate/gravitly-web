@@ -24,6 +24,9 @@ trait ParseApiConnectivity {
   lazy val APP_ID = Play.application.configuration.getString("parseapi.app.id").get
   lazy val REST_API_KEY = Play.application.configuration.getString("parseapi.restapi.key").get
 
+  lazy val CLASS_USER = "_User"
+  lazy val CLASS_PHOTO = "Photo"
+
   private val parseBaseUrl = "%s%s".format(PARSE_API_URL, PARSE_API_URL_CLASSES)
 
   def parseApiConnect(className: String, objectId: Option[String] = None) = objectId match {

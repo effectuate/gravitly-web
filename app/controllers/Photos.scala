@@ -2,8 +2,8 @@ package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.mvc._
-import ly.gravit.web.{BaseController, ParseApiConnectivity, Photo}
-import ly.gravit.web.auth.{Account}
+import ly.gravit.web._
+import ly.gravit.web.auth.Account
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,26 +30,28 @@ object Photos extends BaseController with ParseApiConnectivity {
     New index() represents the Play 2.0 way of doing things
   */
   def index(id: String) = Action {
-    val query = parseApiConnect("Photo", Option(id))
-      .withQueryString("include" -> "user")
+    val query = parseApiConnect(CLASS_PHOTO, Option(id))
+      .withQueryString("include" -> "user,location,category")
 
     Async{
       query.get.map { res =>
         val json = res.json
-        val photo = Option(Photo(
-          (json \ "objectId").as[String],
-          (json \ "caption").as[String],
-          (json \ "filename").as[String],
-          (json \ "user" \ "objectId").as[String]
-        ))
-        val account = Option(Account(
-          (json \ "user" \ "objectId").as[String],
-          null,
-          null,
-          (json \ "user" \ "username").as[String],
-          null
-        ))
-        Ok(views.html.photos.photo(photo, account))
+        println("#### json: " + json)
+        val photo = Option(Photo((json \ "objectId").as[String],
+          (json \ "caption").as[String], (json \ "filename").as[String],
+          (json \ "user" \ "objectId").as[String], (json \ "location" \ "objectId").as[String],
+          (json \ "category" \ "objectId").as[String]))
+
+        val account = Option(Account((json \ "user" \ "objectId").as[String],
+          null, null, (json \ "user" \ "username").as[String], null))
+
+        val location = Option(Location((json \ "location" \ "objectId").as[String],
+          (json \ "location" \ "name").as[String]))
+
+        val category = Option(Category((json \ "category" \ "objectId").as[String],
+          (json \ "category" \ "name").as[String]))
+
+        Ok(views.html.photos.photo(photo, account, location, category))
       }
     }
   }

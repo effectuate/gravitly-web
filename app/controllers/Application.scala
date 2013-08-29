@@ -9,7 +9,7 @@ import ly.gravit.web.dao.parseapi.AccountDaoImpl
 
 object Application extends Controller with LoginLogout with AuthConfigImpl {
   val loginForm = Form {
-    mapping("email" -> email, "password" -> text)(AccountDaoImpl.authenticate)(_.map(u => (u.email, u.password)))
+    mapping("email" -> text, "password" -> text)(AccountDaoImpl.authenticate)(_.map(u => (u.email, u.password)))
       .verifying("Invalid email or password", result => result.isDefined)
   }
   
