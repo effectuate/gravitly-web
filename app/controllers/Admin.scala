@@ -40,6 +40,14 @@ object Admin extends Controller
       "height" -> number
     )
   )
+  
+  def pugslife = Action { implicit request =>
+    request.body.asFormUrlEncoded.get("message")
+    println(" pugss===:) ")
+     Status(200)
+    
+    
+  }
 
   //def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
   def postUpload = Action { implicit request =>
