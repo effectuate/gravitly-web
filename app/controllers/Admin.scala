@@ -51,9 +51,9 @@ object Admin extends Controller with AuthElement with AuthConfigImpl  {
   )
   
   def pugslife = Action { implicit request =>
-    request.body.asFormUrlEncoded.get("message")
-    println(" pugss===:) ")
-     Status(200)
+    val ee =request.body.asFormUrlEncoded.get("message")
+    println(ee)
+    Status(200)
     
     
   }
@@ -99,7 +99,7 @@ object Admin extends Controller with AuthElement with AuthConfigImpl  {
         }
 
         // Save photo info on Parse
-        postToParse(Photo(null, uploadForm._1, new Date))
+        postToParse(Photo(null, uploadForm._1, "filename"))
 
         Ok(admin.upload(uploaderForm))
       }

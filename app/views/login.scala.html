@@ -1,6 +1,5 @@
 @(form: Form[Option[ly.gravit.web.auth.Account]])(implicit flash: Flash)
 
-@main("Admin Login") {
     @helper.form(routes.Application.authenticate) {
 
     <h1>Sign in</h1>
@@ -28,4 +27,3 @@
     </p>
 
     }
-}
