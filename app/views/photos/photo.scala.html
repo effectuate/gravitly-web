@@ -1,5 +1,7 @@
-@(msg: String)
+@(photo: Option[ly.gravit.web.Photo])(implicit imagePath: String)
 
 @main("Gravitly Photo") {
-    @msg
+  <center>
+    <img src="@imagePath/@photo.get.filename" alt="@photo.get.caption" width="612" height="612">
+  </center>
 }

@@ -1,9 +1,7 @@
 package ly.gravit.web
 
 import scala.concurrent.Future
-import play.api.Play.current
 import play.api.libs.ws._
-import play.api.Play
 import play.Logger
 
 /**
@@ -13,27 +11,11 @@ import play.Logger
  * Time: 8:53 PM
  * To change this template use File | Settings | File Templates.
  */
-object ParseApi {
-  private lazy val PARSE_API_URL = "https://api.parse.com"
-  private lazy val PARSE_API_URL_CLASSES = "/1/classes/"
-  private lazy val PARSE_API_AUTH_URL = "/1/login"
-  private lazy val PARSE_API_HEADER_APP_ID = "X-Parse-Application-Id"
-  private lazy val PARSE_API_HEADER_REST_API_KEY = "X-Parse-REST-API-Key"
-  private lazy val PARSE_API_HEADER_CONTENT_TYPE = "Content-Type"
-  private lazy val PARSE_API_HEADER_SESSION = "X-Parse-Session-Token"
-  private lazy val CONTENT_TYPE_JSON = "application/json"
-  private lazy val APP_ID = Play.application.configuration.getString("parseapi.app.id").getOrElse(
-    throw new IllegalStateException("Parse App ID is required"))
-  private lazy val REST_API_KEY = Play.application.configuration.getString("parseapi.restapi.key").getOrElse(
-    throw new IllegalStateException("Parse Rest API Key is required"))
-
-  private def parseBaseUrl = "%s%s".format(PARSE_API_URL, PARSE_API_URL_CLASSES)
+object ParseApi extends ParseApiConnectivity {
 
   def delete(className: String, objectId: String)(implicit sessionToken: String) = {
     if (objectId != null) {
-      val query = WS.url("%s%s/%s".format(parseBaseUrl, className, objectId))
-        .withHeaders(PARSE_API_HEADER_APP_ID -> APP_ID)
-        .withHeaders(PARSE_API_HEADER_REST_API_KEY -> REST_API_KEY)
+      val query = parseApiConnect(className, Option(objectId))
         .withHeaders(PARSE_API_HEADER_SESSION -> sessionToken)
 
       if (Logger.isDebugEnabled) {
@@ -46,19 +28,7 @@ object ParseApi {
     }
   }
 
-  def authenticate(username: String, password: String) = {
-    val query = WS.url("%s%s".format(PARSE_API_URL, PARSE_API_AUTH_URL))
-      .withHeaders(PARSE_API_HEADER_APP_ID -> APP_ID)
-      .withHeaders(PARSE_API_HEADER_REST_API_KEY -> REST_API_KEY)
-      .withQueryString("username" -> username)
-      .withQueryString("password" -> password)
-
-    if (Logger.isDebugEnabled) {
-      Logger.debug("Find: " + query.url)
-    }
-
-    query.get
-  }
+  def authenticate(username: String, password: String) = login(username, password)
 
   def create(className: String, properties: Map[String, Any]) = {
     if (properties != null) {
@@ -76,11 +46,8 @@ object ParseApi {
         idx = idx + 1
       }
 
-      val query = WS.url("%s%s".format(parseBaseUrl, className))
-        .withHeaders(PARSE_API_HEADER_APP_ID -> APP_ID)
-        .withHeaders(PARSE_API_HEADER_REST_API_KEY -> REST_API_KEY)
+      val query = parseApiConnect(className)
         .withHeaders(PARSE_API_HEADER_CONTENT_TYPE -> CONTENT_TYPE_JSON)
-
       query.post("{%s}".format(reqParams.toString))
 
     } else {
@@ -90,9 +57,7 @@ object ParseApi {
 
   def get(className: String, objectId: String): Future[Response] = {
     if (objectId != null) {
-      val query = WS.url("%s%s/%s".format(parseBaseUrl, className, objectId))
-        .withHeaders(PARSE_API_HEADER_APP_ID -> APP_ID)
-        .withHeaders(PARSE_API_HEADER_REST_API_KEY -> REST_API_KEY)
+      val query = parseApiConnect(className, Option(objectId))
 
       if (Logger.isDebugEnabled) {
         Logger.debug("Get: " + query.url)
@@ -120,9 +85,7 @@ object ParseApi {
         idx = idx + 1
       }
 
-      val query = WS.url("%s%s".format(parseBaseUrl, className))
-        .withHeaders(PARSE_API_HEADER_APP_ID -> APP_ID)
-        .withHeaders(PARSE_API_HEADER_REST_API_KEY -> REST_API_KEY)
+      val query = parseApiConnect(className)
         .withQueryString("where" -> "{%s}".format(reqParams.toString))
 
       if (Logger.isDebugEnabled) {

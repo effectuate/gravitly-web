@@ -11,4 +11,5 @@ import ly.gravit.web.Photo
  */
 trait PhotoDao {
   def create(photo: Photo): Option[String]
+  def getById(id: String): Option[Photo]
 }

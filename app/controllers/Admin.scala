@@ -70,18 +70,22 @@ object Admin extends Controller with AuthElement with AuthConfigImpl  {
           Logger.debug("### UploadForm: " + uploadForm)
         }
 
-        // Upload to S3
         request.body.asMultipartFormData match {
           case Some(multi) => {
             val filepart = multi.file("image").get
 
-            println("file: " + filepart.ref.file)
+            println("file: " + filepart.contentType.get)
 
             val src = Source.fromFile(filepart.ref.file)(scala.io.Codec.ISO8859)
             val byteArray = src.map(_.toByte).toArray
             src.close
 
-            s3upload(byteArray, UUID.randomUUID().toString+".png", filepart.contentType.get)
+            val filename = "%s.%s".format(UUID.randomUUID().toString, fileExtension(filepart.contentType))
+
+            // Upload to S3
+            s3upload(byteArray, filename, filepart.contentType.get)
+            // Save photo info on Parse
+            postToParse(Photo(null, uploadForm._1, filename))
           }
           case None => {
             if(Logger.isDebugEnabled) {
@@ -89,9 +93,6 @@ object Admin extends Controller with AuthElement with AuthConfigImpl  {
             }
           }
         }
-
-        // Save photo info on Parse
-        postToParse(Photo(null, uploadForm._1, new Date))
 
         Ok(admin.upload(uploaderForm))
       }
@@ -119,4 +120,12 @@ object Admin extends Controller with AuthElement with AuthConfigImpl  {
       Logger.debug("Photo info posted on Parse: " +objectId)
     }
   }
+
+  private def fileExtension(mimeType: Option[String]) = mimeType match {
+    case Some("image/png") => "png"
+    case Some("image/gif") => "gif"
+    case Some("image/jpeg") => "jpeg"
+    case _ => "jpg"
+  }
+
 }
