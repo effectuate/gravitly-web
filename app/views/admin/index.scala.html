@@ -1,5 +1,7 @@
 @(user: ly.gravit.web.auth.Account)
 
-Hello @user.permission!
-<br>
-<a href="/admin/upload">Photo Upload</a>
+@main("Gravitly Admin") {
+  Hello @user.permission!
+  <br>
+  <a href="/admin/upload">Photo Upload</a>
+}
