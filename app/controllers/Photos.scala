@@ -2,8 +2,8 @@ package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.mvc._
-import play.Play
-import ly.gravit.web.{ParseApiConnectivity, Photo}
+import ly.gravit.web.{BaseController, ParseApiConnectivity, Photo}
+import ly.gravit.web.auth.{Account}
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,10 +12,7 @@ import ly.gravit.web.{ParseApiConnectivity, Photo}
  * Time: 12:52 PM
  * To change this template use File | Settings | File Templates.
  */
-object Photos extends Controller with ParseApiConnectivity {
-  private lazy val IMAGE_SERVER_URL = Play.application.configuration.getString("image.server.url")
-  private lazy val BASE_IMAGE_URI = Play.application.configuration.getString("s3.uploads.bucket")
-  implicit val imagePath = "%s/%s".format(IMAGE_SERVER_URL, BASE_IMAGE_URI)
+object Photos extends BaseController with ParseApiConnectivity {
 
   /*
     Retaining this for posterity; old, 'modular', asynchronous way of retrieving data from a web service.
@@ -33,17 +30,26 @@ object Photos extends Controller with ParseApiConnectivity {
     New index() represents the Play 2.0 way of doing things
   */
   def index(id: String) = Action {
-
     val query = parseApiConnect("Photo", Option(id))
+      .withQueryString("include" -> "user")
 
     Async{
       query.get.map { res =>
+        val json = res.json
         val photo = Option(Photo(
-          (res.json \ "objectId").as[String],
-          (res.json \ "caption").as[String],
-          (res.json \ "filename").as[String]
+          (json \ "objectId").as[String],
+          (json \ "caption").as[String],
+          (json \ "filename").as[String],
+          (json \ "user" \ "objectId").as[String]
         ))
-        Ok(views.html.photos.photo(photo))
+        val account = Option(Account(
+          (json \ "user" \ "objectId").as[String],
+          null,
+          null,
+          (json \ "user" \ "username").as[String],
+          null
+        ))
+        Ok(views.html.photos.photo(photo, account))
       }
     }
   }

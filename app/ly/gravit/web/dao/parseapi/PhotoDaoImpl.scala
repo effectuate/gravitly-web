@@ -24,36 +24,41 @@ object PhotoDaoImpl extends PhotoDao {
   override def create(photo: Photo): Option[String] = {
     val req = ParseApi.create(PARSE_PHOTO, Map(
       "caption" -> photo.caption,
-      "filename" -> photo.filename
+      "filename" -> photo.filename,
+      "user" -> photo.userId
     ))
     val res =  Await.result(req, WS_TIMEOUT seconds)
 
     if (res.status == 201) {
-      return Option((res.json \ "objectId").as[String])
+      val objectId = (res.json \ "objectId").as[String]
+
+      if (Logger.isDebugEnabled) {
+        Logger.debug("Photo Uploaded: " + objectId)
+      }
+      return Option(objectId)
     }
 
     None
   }
 
   override def getById(id: String): Option[Photo] = {
-      var opt: Option[Photo] = None
-      val req = ParseApi.get(PARSE_PHOTO, id)
-      val res = Await.result(req, WS_TIMEOUT seconds)
-      //ParseApi.get(PARSE_PHOTO, id).map { res =>
-        if(Logger.isDebugEnabled) {
-          Logger.debug("GET /photos/%s [%s]".format(id, res.status))
-        }
+    var opt: Option[Photo] = None
+    val req = ParseApi.get(PARSE_PHOTO, id)
+    val res = Await.result(req, WS_TIMEOUT seconds)
 
-        if (res.status == 200) {
-          val json = res.json
-          opt = Option(Photo(
-            (json \ "objectId").as[String],
-            (json \ "caption").as[String],
-            (json \ "filename").as[String]
-          ))
-        }
-      //}
+    if(Logger.isDebugEnabled) {
+      Logger.debug("GET /photos/%s [%s]".format(id, res.status))
+    }
 
-      opt
+    if (res.status == 200) {
+      val json = res.json
+      opt = Option(Photo(
+        (json \ "objectId").as[String],
+        (json \ "caption").as[String],
+        (json \ "filename").as[String],
+        (json \ "user").as[String]
+      ))
+    }
+    opt
   }
 }

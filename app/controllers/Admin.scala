@@ -1,14 +1,14 @@
 package controllers
 
 import java.util.UUID
-import play.{Play, Logger}
+import play.Logger
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import views.html._
 import jp.t2v.lab.play2.auth.AuthElement
 import ly.gravit.web.auth._
-import ly.gravit.web.{S3Connectivity, Photo}
+import ly.gravit.web.{BaseController, S3Connectivity, Photo}
 import ly.gravit.web.dao.parseapi.PhotoDaoImpl
 
 /**
@@ -18,12 +18,10 @@ import ly.gravit.web.dao.parseapi.PhotoDaoImpl
  * Time: 1:01 PM
  * To change this template use File | Settings | File Templates.
  */
-object Admin extends Controller
+object Admin extends BaseController
     with AuthElement
     with AuthConfigImpl
     with S3Connectivity {
-
-  lazy val S3_PHOTOS = Play.application.configuration.getString("s3.uploads.bucket")
 
   def index = StackAction(AuthorityKey -> Administrator) { implicit request =>
     Ok(admin.index(loggedIn))
@@ -49,8 +47,8 @@ object Admin extends Controller
     
   }
 
-  //def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-  def postUpload = Action { implicit request =>
+  def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+  //def postUpload = Action { implicit request =>
     uploaderForm.bindFromRequest.fold(
       errors => BadRequest(admin.upload(errors)),
       uploadForm => {
@@ -68,7 +66,7 @@ object Admin extends Controller
             upload(S3_PHOTOS, byteArray, filename, filePart.contentType.get)
 
             // Save Photo info on Parse
-            PhotoDaoImpl.create(Photo(null, uploadForm._1, filename))
+            PhotoDaoImpl.create(Photo(null, uploadForm._1, filename, loggedIn.id))
           }
           case None => {
             if(Logger.isDebugEnabled) {

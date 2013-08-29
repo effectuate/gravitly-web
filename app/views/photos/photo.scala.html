@@ -1,4 +1,4 @@
-@(photo: Option[ly.gravit.web.Photo])(implicit imagePath: String)
+@(photo: Option[ly.gravit.web.Photo], user: Option[ly.gravit.web.auth.Account])(implicit imagePath: String)
 
 @main("Gravitly Photo") {
 
@@ -11,12 +11,12 @@
     <div class="photo-content">
             <div class="solo-photo-owner">
             <div class="owner-avatar">
-                <img src="/assets/images/gravitly-mini.png"></img>
+                <img src="/assets/images/gravitly-mini.png">
             </div>
             
             <div class="solo-description">
                         <h1>
-                            Leonardo Dapdap
+                            <a href="/u/@user.get.id">@user.get.name</a>
                         </h1>
                         
                         <div class="icon-blue-location"></div>
