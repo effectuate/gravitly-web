@@ -19,9 +19,9 @@ import ly.gravit.web.dao.parseapi.PhotoDaoImpl
  * To change this template use File | Settings | File Templates.
  */
 object Admin extends Controller
-with AuthElement
-with AuthConfigImpl
-with S3Connectivity {
+    with AuthElement
+    with AuthConfigImpl
+    with S3Connectivity {
 
   lazy val S3_PHOTOS = Play.application.configuration.getString("s3.uploads.bucket")
 
@@ -66,6 +66,7 @@ with S3Connectivity {
 
             // Upload to S3
             upload(S3_PHOTOS, byteArray, filename, filePart.contentType.get)
+
             // Save Photo info on Parse
             PhotoDaoImpl.create(Photo(null, uploadForm._1, filename))
           }
