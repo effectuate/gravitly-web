@@ -1,31 +1,42 @@
 @(form: Form[Option[ly.gravit.web.auth.Account]])(implicit flash: Flash)
 
 @main("Admin Login") {
-    @helper.form(routes.Application.authenticate) {
-      <div>
-        <h1>Sign in</h1>
 
-        @form.globalError.map { error =>
-        <p class="error">
-            @error.message
-        </p>
-        }
+      <div class="sign-in-container">
+        <div>
+            <div class="sign-in">
+                <h1>Sign in</h1>
+            </div>
 
-        @flash.get("success").map { message =>
-        <p class="success">
-            @message
-        </p>
-        }
+            @helper.form(routes.Application.authenticate) {
+            @form.globalError.map { error =>
+            <p class="error">
+                @error.message
+            </p>
+            }
 
-        <p>
-            <input type="text" name="email" placeholder="Email" id="email" value="kingslayer07">
-        </p>
-        <p>
-            <input type="password" name="password" id="password" placeholder="Password" value="password">
-        </p>
-        <p>
-            <button type="submit" id="loginbutton">Login</button>
-        </p>
+            @flash.get("success").map { message =>
+            <p class="success">
+                @message
+            </p>
+            }
+            <div class="email">
+                <p>
+                    <input type="text" name="email" placeholder="Email" id="email" value="kingslayer07">
+                </p>
+            </div>
+            <div class="password">
+                <p>
+                    <input type="password" name="password" id="password" placeholder="Password" value="password">
+                </p>
+            </div>
+
+            <p>
+                <button type="submit" id="loginbutton">Login</button>
+            </p>
+        </div>
+
+
       </div>
     }
 }

@@ -1,9 +1,18 @@
 @(user: ly.gravit.web.auth.Account)
 
 @main("Gravitly Admin") {
-  <h3>Hello @user.permission!</h3>
+<div class="owner-avatar">
+    <img src="/assets/images/gravitly-mini.png">
+</div>
+<div class="greetings">
+    <h3>Hello @user.permission!</h3>
+</div>
+
   <br>
-  <a href="/admin/upload">Upload a Photo</a>
+<div class="upload">
+    <a href="/admin/upload">Upload a Photo</a>
+</div>
+
   <p>
     <a href="/logout">Log out</a>
   </p>
