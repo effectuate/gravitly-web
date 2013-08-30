@@ -6,13 +6,13 @@
 @for((k,v) <- photos) {
   <div class="solo-photo-container" id="@k">
     <div class="photo">
-        <img src="@imagePath/@v._1.filename" alt="@v._1.caption" width="306" height="306">
+        <a href="/photos/@k"><img src="@imagePath/@v._1.filename" alt="@v._1.caption" width="306" height="306"></a>
     </div>
 
     <div class="photo-content">
         <div class="solo-photo-owner">
             <div class="owner-avatar">
-                <img src="/assets/images/gravitly-mini.png">
+              <img src="/assets/images/gravitly-mini.png">
             </div>
 
             <div class="solo-description">
