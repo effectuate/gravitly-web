@@ -39,7 +39,7 @@ object Photos extends BaseController with ParseApiConnectivity {
     Async{
       query.get.map { res =>
         val json = res.json
-        println("#### json: " + json)
+        //println("#### json: " + json)
         val photo = Option(Photo((json \ "objectId").as[String],
           (json \ "caption").as[String], (json \ "filename").as[String],
           (json \ "user" \ "objectId").as[String], (json \ "location" \ "objectId").as[String],
@@ -71,7 +71,7 @@ object Photos extends BaseController with ParseApiConnectivity {
     Async {
       query.get.map {res =>
         val resultJson = res.json
-        println("#### photosByJson: " + resultJson)
+        //println("#### photosByJson: " + resultJson)
 
         val photoMap = new mutable.HashMap[String, Tuple4[Photo, Account, Location, Category]]()
 
