@@ -288,15 +288,19 @@ body,html {
 
 .post-details{
 	margin: 10px 0px 0px 0px;
-	.details {
-		color: red;
-		width: 400px;
+	
+	.details-container{
 		float: left;
 	}
 
+	.details {
+		width: 400px;
+	}
+
+
+
 	.share-post {
-		color:blue;
-		
+		float: right;
 	}
 
 	.post-geolocation {
@@ -316,6 +320,22 @@ body,html {
 .link {
 	color: #2980b9;
 	font-size: 15px;
+}
+
+.icon-white-share {
+	width: 30px;
+	height: 30px;
+	background-position: -15px -140px;
+	float: left;
+	background-image: url("../images/gravitly-icon.png");
+}
+
+.icon-white-darrow {
+	width: 30px;
+	height: 30px;
+	float: left;
+	background-image: url("../images/gravitly-icon.png");
+	background-position: -14px -182px
 }
 
 .icon-blue-location {
@@ -349,7 +369,6 @@ body,html {
 	float: left;
 	background-image: url("../images/gravitly-icon.png");
 }
-
 
 .icon-badge-water {
 	width: 25px;
@@ -417,7 +436,76 @@ body,html {
 		border-left: 12px solid transparent;
 		border-right: 12px solid transparent;
 	}
+
 }
+
+
+.share-utl{
+	color:#fff;
+	.share-btn{
+		 cursor: pointer; 
+		 cursor: hand;
+		width: 130px;
+		height: 35px;
+		background: #3498db;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius:5px;
+
+			.share{
+				float: left;
+				width: 95px;
+				padding: 2px;
+				line-height: 30px;
+
+				p{
+					margin-left: 35px;
+				}
+			}
+
+			.share-opt{
+				width: 30px;
+				overflow: hidden;
+				height: 35px;
+
+	
+
+
+			}
+
+				.options {
+					background: #fff;
+					list-style: none;
+					position: absolute;
+					left:-9999px;
+					margin: 42px 0px 0px -95px;
+					width: 125px;
+				}
+
+
+			.share-opt:hover {
+				opacity:0.4;
+				background:#2980b9;
+				
+
+				.options {
+					background: red;
+					left:200px;
+				}
+
+
+			}
+
+
+	}
+
+	.share-btn:hover{
+		background: #38A3D1;
+	}
+
+	
+}
+
 .main-nav-container{
     margin: 0 auto;
     width: 950px;
