@@ -13,6 +13,9 @@ import jp.t2v.lab.play2.auth.AuthElement
 import ly.gravit.web.auth._
 import ly.gravit.web._
 import ly.gravit.web.Photo
+import java.io.File
+import com.drew.imaging.ImageMetadataReader
+import com.drew.metadata.{Tag, Directory, Metadata}
 
 /**
  * Created with IntelliJ IDEA.
@@ -69,10 +72,11 @@ object Admin extends BaseController
             val filename = "%s.%s".format(UUID.randomUUID().toString, fileExtension(filePart.contentType))
 
             // Upload to S3
-            upload(S3_PHOTOS, byteArray, filename, filePart.contentType.get)
+            //upload(S3_PHOTOS, byteArray, filename, filePart.contentType.get)
 
             // Save Photo info on Parse
-            create(Photo(null, uploadForm._1, filename, loggedIn.id, uploadForm._4,uploadForm._5))
+            val exif = exifData(filePart.ref.file)
+            //create(Photo(null, uploadForm._1, filename, loggedIn.id, uploadForm._4,uploadForm._5))
           }
           case None => {
             if(Logger.isDebugEnabled) {
@@ -109,5 +113,39 @@ object Admin extends BaseController
     }
 
     None
+  }
+
+  /*
+    #### EXIF TAG: [Jpeg] Compression Type - Baseline
+    #### EXIF TAG: [Jpeg] Data Precision - 8 bits
+    #### EXIF TAG: [Jpeg] Image Height - 308 pixels
+    #### EXIF TAG: [Jpeg] Image Width - 545 pixels
+    #### EXIF TAG: [Jpeg] Number of Components - 3
+    #### EXIF TAG: [Jpeg] Component 1 - Y component: Quantization table 0, Sampling factors 2 horiz/2 vert
+    #### EXIF TAG: [Jpeg] Component 2 - Cb component: Quantization table 1, Sampling factors 1 horiz/1 vert
+    #### EXIF TAG: [Jpeg] Component 3 - Cr component: Quantization table 1, Sampling factors 1 horiz/1 vert
+    #### EXIF TAG: [Jfif] Version - 1.2
+    #### EXIF TAG: [Jfif] Resolution Units - none
+    #### EXIF TAG: [Jfif] X Resolution - 100 dots
+    #### EXIF TAG: [Jfif] Y Resolution - 100 dots
+    #### EXIF TAG: [Adobe Jpeg] DCT Encode Version - 1
+    #### EXIF TAG: [Adobe Jpeg] Flags 0 - 192
+    #### EXIF TAG: [Adobe Jpeg] Flags 1 - 0
+    #### EXIF TAG: [Adobe Jpeg] Color Transform - YCbCr
+   */
+  private def exifData(imageFile: File) = {
+    val metadata: Metadata = ImageMetadataReader.readMetadata(imageFile)
+    val iter: java.util.Iterator[Directory] = metadata.getDirectories.iterator
+
+    while(iter.hasNext) {
+      val directory = iter.next
+      val tagIter = directory.getTags.iterator
+
+      while (tagIter.hasNext) {
+        val tag = tagIter.next
+
+        println("#### EXIF TAG: " + tag)
+      }
+    }
   }
 }
