@@ -13,6 +13,7 @@ import jp.t2v.lab.play2.auth.AuthElement
 import ly.gravit.web.auth._
 import ly.gravit.web._
 import ly.gravit.web.Photo
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,7 +33,18 @@ object Admin extends BaseController
   }
 
   def upload = StackAction(AuthorityKey -> Administrator) { implicit request =>
-    Ok(admin.upload(uploaderForm))
+      Async{
+        Details.getLocations.map{
+          loc =>
+            Async{
+              Details.getCategories.map{
+                cat =>
+                Ok(admin.upload(uploaderForm,loc.toList, cat.toList))
+              }
+
+        }
+      }
+    }
   }
 
   val uploaderForm = Form(
@@ -56,7 +68,17 @@ object Admin extends BaseController
   def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
   //def postUpload = Action { implicit request =>
     uploaderForm.bindFromRequest.fold(
-      errors => BadRequest(admin.upload(errors)),
+      errors =>
+        Async{
+        Details.getLocations.map{ loc =>
+          Async{
+            Details.getCategories.map{ cat =>
+              BadRequest(admin.upload(errors,loc.toList,cat.toList))
+            }
+          }
+
+        }
+       },
       uploadForm => {
         if(Logger.isDebugEnabled) {
           Logger.debug("### UploadForm: " + uploadForm)
@@ -80,7 +102,17 @@ object Admin extends BaseController
             }
           }
         }
-        Ok(admin.upload(uploaderForm))
+        Async{
+          Details.getLocations.map{loc =>
+            Async{
+              Details.getCategories.map{ cat =>
+                Ok(admin.upload(uploaderForm,loc.toList, cat.toList))
+              }
+            }
+
+          }
+        }
+
       }
     )
   }

@@ -1,5 +1,7 @@
 
-@(form: Form[(String, Int, Int, String, String)])
+@(form: Form[(String, Int, Int, String, String)],
+location : List[ly.gravit.web.Location],
+category : List[ly.gravit.web.Category])
 
 @main("Photo Upload") {
 
@@ -14,16 +16,16 @@
     <br>
     <select name="location">
       <option value="-1">[ Select Location ]</option>
-      <option value="i1RFAYwlhR">Alpine Meadows</option>
-      <option value="u6ffhvdZJH">Heavenly Mountain Resort</option>
-      <option value="6LgLd9jODw">Squaw Valley</option>
+       @location.map{ loc =>
+        <option value="@loc.id">@loc.name</option>
+        }
     </select>
     <br>
     <select name="category">
       <option value="-1">[ Select Sport ]</option>
-      <option value="rph0ovXefp">Snow</option>
-      <option value="P0QlFETikE">Trail</option>
-      <option value="uoabsxZmSB">Wind</option>
+        @category.map{ cat =>
+        <option value="@cat.id">@cat.name</option>
+        }
     </select>
     <br>
     <input type="file" name="image" id="file">

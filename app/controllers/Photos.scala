@@ -2,8 +2,11 @@ package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.mvc._
+import views.html._
 import ly.gravit.web._
 import ly.gravit.web.auth.Account
+import play.api.libs.json.JsObject
+import scala.collection.mutable
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +39,7 @@ object Photos extends BaseController with ParseApiConnectivity {
     Async{
       query.get.map { res =>
         val json = res.json
-        println("#### json: " + json)
+        //println("#### json: " + json)
         val photo = Option(Photo((json \ "objectId").as[String],
           (json \ "caption").as[String], (json \ "filename").as[String],
           (json \ "user" \ "objectId").as[String], (json \ "location" \ "objectId").as[String],
@@ -51,7 +54,46 @@ object Photos extends BaseController with ParseApiConnectivity {
         val category = Option(Category((json \ "category" \ "objectId").as[String],
           (json \ "category" \ "name").as[String]))
 
-        Ok(views.html.photos.photo(photo, account, location, category))
+        Ok(photos.photo(photo, account, location, category))
+      }
+    }
+  }
+
+  def photosByUser(id: String) = Action {
+    val reqParams = new StringBuilder(512)
+    reqParams.append(""""user":{"__type":"Pointer","className":"_User","objectId":"%s"}""".format(id))
+
+    val query = parseApiConnect(CLASS_PHOTO)
+      .withQueryString("where" -> "{%s}".format(reqParams.toString))
+
+      .withQueryString("include" -> "user,location,category")
+
+    Async {
+      query.get.map {res =>
+        val resultJson = res.json
+        //println("#### photosByJson: " + resultJson)
+
+        val photoMap = new mutable.HashMap[String, Tuple4[Photo, Account, Location, Category]]()
+
+        (resultJson \ "results").as[List[JsObject]].map {json =>
+        val photo = Option(Photo((json \ "objectId").as[String],
+          (json \ "caption").as[String], (json \ "filename").as[String],
+          (json \ "user" \ "objectId").as[String], (json \ "location" \ "objectId").as[String],
+          (json \ "category" \ "objectId").as[String]))
+
+        val account = Option(Account((json \ "user" \ "objectId").as[String],
+          null, null, (json \ "user" \ "username").as[String], null))
+
+        val location = Option(Location((json \ "location" \ "objectId").as[String],
+          (json \ "location" \ "name").as[String]))
+
+        val category = Option(Category((json \ "category" \ "objectId").as[String],
+          (json \ "category" \ "name").as[String]))
+
+          photoMap put (photo.get.id, (photo.get, account.get, location.get, category.get))
+
+        }
+        Ok(photos.stream(photoMap))
       }
     }
   }
