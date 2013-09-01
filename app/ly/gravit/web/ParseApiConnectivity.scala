@@ -26,6 +26,8 @@ trait ParseApiConnectivity {
 
   lazy val CLASS_USER = "_User"
   lazy val CLASS_PHOTO = "Photo"
+  lazy val CLASS_LOCATION = "Location"
+  lazy val CLASS_CATEGORY = "Category"
 
   private val parseBaseUrl = "%s%s".format(PARSE_API_URL, PARSE_API_URL_CLASSES)
 

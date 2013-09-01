@@ -1,5 +1,6 @@
 package controllers
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import java.util.UUID
 import scala.language.postfixOps
 import scala.concurrent.Await
@@ -35,7 +36,18 @@ object Admin extends BaseController
   }
 
   def upload = StackAction(AuthorityKey -> Administrator) { implicit request =>
-    Ok(admin.upload(uploaderForm))
+      Async{
+        Details.getLocations.map{
+          loc =>
+            Async{
+              Details.getCategories.map{
+                cat =>
+                Ok(admin.upload(uploaderForm,loc.toList, cat.toList))
+              }
+
+        }
+      }
+    }
   }
 
   val uploaderForm = Form(
@@ -59,7 +71,17 @@ object Admin extends BaseController
   def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
   //def postUpload = Action { implicit request =>
     uploaderForm.bindFromRequest.fold(
-      errors => BadRequest(admin.upload(errors)),
+      errors =>
+        Async{
+        Details.getLocations.map{ loc =>
+          Async{
+            Details.getCategories.map{ cat =>
+              BadRequest(admin.upload(errors,loc.toList,cat.toList))
+            }
+          }
+
+        }
+       },
       uploadForm => {
         if(Logger.isDebugEnabled) {
           Logger.debug("### UploadForm: " + uploadForm)
@@ -84,7 +106,17 @@ object Admin extends BaseController
             }
           }
         }
-        Ok(admin.upload(uploaderForm))
+        Async{
+          Details.getLocations.map{loc =>
+            Async{
+              Details.getCategories.map{ cat =>
+                Ok(admin.upload(uploaderForm,loc.toList, cat.toList))
+              }
+            }
+
+          }
+        }
+
       }
     )
   }
