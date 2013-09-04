@@ -2,41 +2,124 @@
     ly.gravit.web.Location, ly.gravit.web.Category]])(implicit imagePath: String)
 
 @main("Gravitly Photo") {
-
-@for((k,v) <- photos) {
-  <div class="solo-photo-container" id="@k">
-    <div class="photo">
-        <a href="/photos/@k"><img src="@imagePath/@v._1.filename" alt="@v._1.caption" width="306" height="306"></a>
-    </div>
-
-    <div class="photo-content">
-        <div class="solo-photo-owner">
-            <div class="owner-avatar">
-              <img src="/assets/images/gravitly-mini.png">
+<!--start profile-->
+<div class="profile">
+    <div class="grid_12">
+        <div class="profile-info-wrapper">
+            <div class="avatar-container">
+                <img src="@routes.Assets.at("images/gravitly.png")"><img>
             </div>
 
-            <div class="solo-description">
+            <div class="description-container">
                 <h1>
-                    <a href="/u/@v._2.id">@v._2.name</a>
+                    Leonardo Dapdap
                 </h1>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis, fugit, quasi placeat impedit vitae cumque officia et perferendis temporibus ipsam tenetur ut laborum quo perspiciatis.<a class="link" href="#"> http://gravit.ly</a>
+                </p>
+            </div>
 
-                <div class="icon-blue-location"></div>
-                <div class="owner-location">
-                    <a href="/photos/location/@v._3.id">@v._3.name</a>
-                </div>
-                <div class="owner-category">
-                    Sport: <a href="/photos/category/@v._4.id">@v._4.name</a>
+            <div class="badges">
+                <div class="icon-badge-water"></div>
+                <div class="icon-badge-water"></div>
+                <div class="icon-badge-water"></div>
+            </div>
+
+
+            <div class="post-count-container">
+                <div class="number-post">
+                    310
+                    <p>
+                        POST
+                    </p>
                 </div>
 
-                <p class="image-name">@v._1.caption</p>
             </div>
 
         </div>
+    </div>
+</div>
+<!-- end profile -->
+<!-- start switcher -->
+<div class="switcher">
+    <div class="grid_9">
+        <div class="accent">
+            &nbsp
+        </div>
+    </div>
 
+    <div class="grid_3">
+        <div class="switcher-utl">
+            <ul>
+                <li class="icon-white-grid"><a href="#"></a></li>
+                <li class="icon-white-list"><a href="#"></a></li>
+                <li class="icon-white-map"><a href="#"></a></li>
+            </ul>
+            <div class="arrow-down"></div>
+        </div>
+    </div>
+</div>
+@for((k,v) <- photos) {
+<!-- start content -->
+<div class="content-container">
+    <div class="content">
+<div class="post-container">
+    <div class="post">
+        <div class="post-owner">
+            <div class="owner">
+                <div class="owner-container">
+                    <div class="owner-avatar">
+                        <img src=@routes.Assets.at("images/gravitly-mini.png")>
+                    </div>
+
+                    <div class="owner-name">
+                        <a href="/u/@v._2.id">@v._2.name</a>
+                    </div>
+
+
+
+                    <div class="icon-blue-location"></div>
+                    <div class="owner-location">
+                        <a href="/photos/location/@v._3.id">@v._3.name</a>
+                    </div>
+                </div>
+
+                <div class="owner-badge-container">
+                    <div class="owner-badge">
+                        <div class="icon-badge-water"></div>
+                        <div class="icon-badge-water"></div>
+                        <div class="icon-badge-water"></div>
+                        <div class="icon-badge-water"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="post-image">
+            <a href="/photos/@k"><img src="@imagePath/@v._1.filename" alt="@v._1.caption" width="612" height="612"></a>
+        </div>
         <div class="post-description">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis, fugit, quasi placeat impedit vitae cumque officia et perfe. <a class="hashtag"  href="#">#dolor </a><a class="hashtag" href="#"> #sit</a><a class="hashtag" href="#"> #amet </a><a class="hashtag" href="#">#consectetur</a><a class="hashtag" href="#"> #adipisicing </a><a class="hashtag" href="#">#obis</a><a class="hashtag"  href="#"> #quasi</a>
         </div>
+        <div class="post-details">
+            <div class="details">
+                <div class="geolocation-container">
+                    <div class="icon-gray-compass"></div>
+                    <div class="post-geolocation">12.5969 N, 85.8795 W</div>
+                </div>
+                <div class="timestamp-container">
+                    <div class="icon-gray-time"></div>
+                    <div class="post-timestamp">August 11, 2013 13:17 PST</div>
+                </div>
+            </div>
+            <div class="share-post">
+                sius bonorum ne est, eam commune sapientem cu.
+            </div>
+
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
   }
 }
