@@ -1,10 +1,11 @@
 package controllers
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import java.util.UUID
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
-import scala.concurrent.Await
+import scala.concurrent.{Future, Await}
 import scala.concurrent.duration._
+import play.api.Play.current
 import play.Logger
 import play.api.mvc._
 import play.api.data._
@@ -17,6 +18,9 @@ import ly.gravit.web.Photo
 import java.io.File
 import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.{Tag, Directory, Metadata}
+import play.api.Play
+import play.api.libs.ws.WS
+import play.api.libs.json.{JsArray, JsObject}
 
 /**
  * Created with IntelliJ IDEA.
@@ -178,6 +182,89 @@ object Admin extends BaseController
 
         println("#### EXIF TAG: " + tag)
       }
+    }
+  }
+
+
+
+  val sierraAtTahoe = "CoQBdAAAANahspttjHfS875axpTChB9K17fFVW3beJ6l_4kTulu_eRbwAH1GzyGYL8KetHXcW-v1w66rLY3sUgd5Jpp0HrGTXoO7b7ad2zJCac8WjVJOAnUI9vuaZcaMu1fwyiGOfqzdnWL0kAb7A2rl0g7IZhShJfjSnyuy7q3FNoa3DWGvEhAzU1Ysyhf0HL_TD6Bd-PEJGhTjedH1ZjfDrBAOM4FI_sRw2xBGDg"
+
+  def meta(category: String) = Action {
+      category match {
+        case "rph0ovXefp" => {
+          Async {
+            // wwo
+            val wwoUrl = Play.application.configuration.getString("meta.api.wwo.url").get
+            val wwoKey = Play.application.configuration.getString("meta.api.wwo.key").get
+            val wwoDs = Play.application.configuration.getString("meta.api.wwo.dataset").get.split(",")
+            val req = "%s%s?%s&format=json&key=%s".format(wwoUrl, "/marine.ashx", "q=45%2C-2", wwoKey)
+
+            /*pullData(req, wwoDs).map { m =>
+              Ok(m.toString)
+            }*/
+
+            getGooglePlace(sierraAtTahoe).map { gp=>
+              Ok(gp.toString)
+            }
+          }
+        }
+
+        case _ => BadRequest("Unsupported category.")
+      }
+  }
+
+  private def pullData(url: String, dataSet: Array[String]): Future[Map[String, Any]] = {
+    if (Logger.isDebugEnabled) {
+      Logger.debug("3rdParty: "  +url)
+    }
+
+    Future {
+      var map = Map[String, Any]()
+      val req = WS.url(url).get
+      val res = Await.result(req, 20 seconds)
+
+      val json = res.json
+      val weatherJson = (json \ "data" \ "weather").as[List[JsObject]].head
+      val hourly = (weatherJson \ "hourly").as[List[JsObject]].head
+
+      dataSet.map{ key =>
+        println("key: " + key)
+        map += (key -> (hourly \ key).as[String])
+      }
+
+      map
+    }
+  }
+
+
+  private def getGooglePlace(reference: String): Future[Map[String, Any]] = {
+    Future {
+      val gpUrl = Play.application.configuration.getString("meta.api.goglplaces.url").get
+      val gpKey = Play.application.configuration.getString("meta.api.goglplaces.key").get
+      val url = "%s?reference=%s&sensor=true&key=%s".format(gpUrl,reference,gpKey)
+
+      if (Logger.isDebugEnabled) {
+        Logger.debug("3rdParty: "  +url)
+      }
+      var map = Map[String, Any]()
+      val req = WS.url(url).get
+      val res = Await.result(req, 20 seconds)
+      val json = res.json
+      val results = (json \ "result")
+
+      (results \ "address_components").as[List[JsObject]].map { ac =>
+        (ac \ "types").as[JsArray].value.map { t =>
+          t.as[String] match {
+            case "country" => map += ("country" -> (ac \ "short_name").as[String])
+            case "locality" => map += ("locality" -> (ac \ "short_name").as[String])
+            case _ => /* noop */
+          }
+        }
+      }
+      map += ("name" -> (results \ "name").as[String])
+      map += ("utc_offset" -> (results \ "utc_offset").as[Int])
+
+      map
     }
   }
 }

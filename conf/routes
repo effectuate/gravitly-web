@@ -22,3 +22,5 @@ GET     /admin                      controllers.Admin.index
 GET     /admin/upload               controllers.Admin.upload
 #POST    /admin/upload               controllers.Admin.submitUpload
 POST    /admin/upload               controllers.Admin.postUpload
+
+GET     /meta/:category   controllers.Admin.meta(category: String)
