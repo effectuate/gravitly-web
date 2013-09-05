@@ -1,6 +1,7 @@
 package controllers
 
 import java.util.UUID
+import java.io.File
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
 import scala.concurrent.{Future, Await}
@@ -10,17 +11,24 @@ import play.Logger
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.Play
+import play.api.libs.ws.WS
+import play.api.libs.json._
 import views.html._
-import jp.t2v.lab.play2.auth.AuthElement
 import ly.gravit.web.auth._
 import ly.gravit.web._
 import ly.gravit.web.Photo
-import java.io.File
+import scalaz._
+import Scalaz._
+import play.api.libs.json.Json._
 import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.{Tag, Directory, Metadata}
-import play.api.Play
-import play.api.libs.ws.WS
-import play.api.libs.json.{JsArray, JsObject}
+import jp.t2v.lab.play2.auth.AuthElement
+import play.api.libs.json.JsArray
+import scala.Some
+import ly.gravit.web.Photo
+import play.api.libs.json.JsObject
+import scala.collection.mutable
 
 /**
  * Created with IntelliJ IDEA.
@@ -185,41 +193,71 @@ object Admin extends BaseController
     }
   }
 
-
-
   val sierraAtTahoe = "CoQBdAAAANahspttjHfS875axpTChB9K17fFVW3beJ6l_4kTulu_eRbwAH1GzyGYL8KetHXcW-v1w66rLY3sUgd5Jpp0HrGTXoO7b7ad2zJCac8WjVJOAnUI9vuaZcaMu1fwyiGOfqzdnWL0kAb7A2rl0g7IZhShJfjSnyuy7q3FNoa3DWGvEhAzU1Ysyhf0HL_TD6Bd-PEJGhTjedH1ZjfDrBAOM4FI_sRw2xBGDg"
 
+  val categoryMap = Map(
+    "PVVqIA0NRI" -> "All/Custom",
+    "3YYJZFAp8B" -> "Flight",
+    "u1A6tJR4B0" -> "General Weather",
+    "bZWt3gbTxS" -> "River",
+    "w75f8pnvDJ" -> "Snow",
+    "rph0ovXefp" -> "Surf",
+    "P0QlFETikE" -> "Trail",
+    "uoabsxZmSB" -> "Wind"
+  )
+
   def meta(category: String) = Action {
-      category match {
-        case "rph0ovXefp" => {
-          Async {
-            // wwo
-            val wwoUrl = Play.application.configuration.getString("meta.api.wwo.url").get
-            val wwoKey = Play.application.configuration.getString("meta.api.wwo.key").get
-            val wwoDs = Play.application.configuration.getString("meta.api.wwo.dataset").get.split(",")
-            val req = "%s%s?%s&format=json&key=%s".format(wwoUrl, "/marine.ashx", "q=45%2C-2", wwoKey)
-
-            /*pullData(req, wwoDs).map { m =>
-              Ok(m.toString)
-            }*/
-
-            getGooglePlace(sierraAtTahoe).map { gp=>
-              Ok(gp.toString)
-            }
+    categoryMap(category) match {
+      case "Surf" | "General Weather" | "Trail" | "Wind" => {
+        Async {
+          for {
+            gp <- getGooglePlace(sierraAtTahoe)
+            wwo <- getWwo
+          } yield {
+            val meta = Json.obj(
+              "name" -> gp("name").as[String],
+              "utc_offset" -> gp("utc_offset").as[Int],
+              "country" -> gp("country").as[String],
+              "locality" -> gp("locality").as[String],
+              "cloudcover" -> wwo("cloudcover").as[String],
+              "humidity" -> wwo("humidity").as[String],
+              "precipMM" -> wwo("precipMM").as[String],
+              "pressure" -> wwo("pressure").as[String],
+              "sigHeight_m" -> wwo("sigHeight_m").as[String],
+              "swellDir" -> wwo("swellDir").as[String],
+              "swellHeight_m" -> wwo("swellHeight_m").as[String],
+              "swellPeriod_secs" -> wwo("swellPeriod_secs").as[String],
+              "visibility" -> wwo("visibility").as[String],
+              "weatherCode" -> wwo("weatherCode").as[String],
+              "winddir16Point" -> wwo("winddir16Point").as[String],
+              "winddirDegree" -> wwo("winddirDegree").as[String],
+              "windspeedKmph" -> wwo("windspeedKmph").as[String],
+              "windspeedMiles" -> wwo("windspeedMiles").as[String]
+            )
+            Ok(Json.obj(categoryMap(category) -> meta))
           }
         }
-
-        case _ => BadRequest("Unsupported category.")
       }
+      case "Snow" => Ok
+      case "Flight" => Ok
+      case "River" => Ok
+      case "All/Custom" => Ok
+      case _ => BadRequest("Unsupported category.")
+    }
   }
 
-  private def pullData(url: String, dataSet: Array[String]): Future[Map[String, Any]] = {
-    if (Logger.isDebugEnabled) {
-      Logger.debug("3rdParty: "  +url)
-    }
-
+  private def getWwo: Future[Map[String, JsValue]] = {
     Future {
-      var map = Map[String, Any]()
+      val wwoUrl = Play.application.configuration.getString("meta.api.wwo.url").get
+      val wwoKey = Play.application.configuration.getString("meta.api.wwo.key").get
+      val wwoDs = Play.application.configuration.getString("meta.api.wwo.dataset").get.split(",")
+      val url = "%s%s?%s&format=json&key=%s".format(wwoUrl, "/marine.ashx", "q=45%2C-2", wwoKey)
+
+      if (Logger.isDebugEnabled) {
+        Logger.debug("3rdParty: "  +url)
+      }
+
+      var map = Map[String, JsValue]()
       val req = WS.url(url).get
       val res = Await.result(req, 20 seconds)
 
@@ -227,17 +265,15 @@ object Admin extends BaseController
       val weatherJson = (json \ "data" \ "weather").as[List[JsObject]].head
       val hourly = (weatherJson \ "hourly").as[List[JsObject]].head
 
-      dataSet.map{ key =>
-        println("key: " + key)
-        map += (key -> (hourly \ key).as[String])
+      wwoDs.map{ key =>
+        map += (key -> (hourly \ key))
       }
 
       map
     }
   }
 
-
-  private def getGooglePlace(reference: String): Future[Map[String, Any]] = {
+  private def getGooglePlace(reference: String): Future[Map[String, JsValue]] = {
     Future {
       val gpUrl = Play.application.configuration.getString("meta.api.goglplaces.url").get
       val gpKey = Play.application.configuration.getString("meta.api.goglplaces.key").get
@@ -246,7 +282,7 @@ object Admin extends BaseController
       if (Logger.isDebugEnabled) {
         Logger.debug("3rdParty: "  +url)
       }
-      var map = Map[String, Any]()
+      var map = Map[String, JsValue]()
       val req = WS.url(url).get
       val res = Await.result(req, 20 seconds)
       val json = res.json
@@ -255,14 +291,14 @@ object Admin extends BaseController
       (results \ "address_components").as[List[JsObject]].map { ac =>
         (ac \ "types").as[JsArray].value.map { t =>
           t.as[String] match {
-            case "country" => map += ("country" -> (ac \ "short_name").as[String])
-            case "locality" => map += ("locality" -> (ac \ "short_name").as[String])
+            case "country" => map += ("country" -> (ac \ "short_name"))
+            case "locality" => map += ("locality" -> (ac \ "short_name"))
             case _ => /* noop */
           }
         }
       }
-      map += ("name" -> (results \ "name").as[String])
-      map += ("utc_offset" -> (results \ "utc_offset").as[Int])
+      map += ("name" -> (results \ "name"))
+      map += ("utc_offset" -> (results \ "utc_offset"))
 
       map
     }
