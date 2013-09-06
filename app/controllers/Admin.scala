@@ -194,6 +194,7 @@ object Admin extends BaseController
   }
 
   val sierraAtTahoe = "CoQBdAAAANahspttjHfS875axpTChB9K17fFVW3beJ6l_4kTulu_eRbwAH1GzyGYL8KetHXcW-v1w66rLY3sUgd5Jpp0HrGTXoO7b7ad2zJCac8WjVJOAnUI9vuaZcaMu1fwyiGOfqzdnWL0kAb7A2rl0g7IZhShJfjSnyuy7q3FNoa3DWGvEhAzU1Ysyhf0HL_TD6Bd-PEJGhTjedH1ZjfDrBAOM4FI_sRw2xBGDg"
+  val pillarPoint = "CoQBcgAAAKzJpbZ_I_TTCg1ZybQQL-nZDzGhMLDEAq6WlGYKC_cwcAyH046g9zsmJJP2hdUnaHnYCJmAicX8jaJcGFwjda_fI2m8cWNbQXfuT6GFNW4-eVNL2tf6Ai95EhXszyI6rpKvsS_LyjeEqODAF_d458XN_0Ccu8fgvzPodl9e351eEhCK6Ig6sxyq4tMFdE8q62vaGhSsEnVc23t82zzg_dQPTiKy2Rzbfw"
 
   val categoryMap = Map(
     "PVVqIA0NRI" -> "All/Custom",
@@ -211,7 +212,7 @@ object Admin extends BaseController
       case "Surf" => {
         Async {
           for {
-            gp <- getGooglePlace(sierraAtTahoe)
+            gp <- getGooglePlace(pillarPoint)
             wwo <- getWwoMarine
           } yield {
             val meta = Json.obj(
