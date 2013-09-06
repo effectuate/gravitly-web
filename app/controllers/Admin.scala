@@ -208,11 +208,11 @@ object Admin extends BaseController
 
   def meta(category: String) = Action {
     categoryMap(category) match {
-      case "Surf" | "General Weather" | "Trail" | "Wind" => {
+      case "Surf" => {
         Async {
           for {
             gp <- getGooglePlace(sierraAtTahoe)
-            wwo <- getWwo
+            wwo <- getWwoMarine
           } yield {
             val meta = Json.obj(
               "name" -> gp("name").as[String],
@@ -238,6 +238,33 @@ object Admin extends BaseController
           }
         }
       }
+      case "General Weather" | "Trail" | "Wind" => {
+        Async {
+          for {
+            gp <- getGooglePlace(sierraAtTahoe)
+            wwo <- getWwo
+          } yield {
+            val meta = Json.obj(
+              "name" -> gp("name").as[String],
+              "utc_offset" -> gp("utc_offset").as[Int],
+              "country" -> gp("country").as[String],
+              "locality" -> gp("locality").as[String],
+              "cloudcover" -> wwo("cloudcover").as[String],
+              "humidity" -> wwo("humidity").as[String],
+              "precipMM" -> wwo("precipMM").as[String],
+              "pressure" -> wwo("pressure").as[String],
+              "visibility" -> wwo("visibility").as[String],
+              "weatherCode" -> wwo("weatherCode").as[String],
+              "weatherDesc" -> wwo("weatherDesc").as[String],
+              "winddir16Point" -> wwo("winddir16Point").as[String],
+              "winddirDegree" -> wwo("winddirDegree").as[String],
+              "windspeedKmph" -> wwo("windspeedKmph").as[String],
+              "windspeedMiles" -> wwo("windspeedMiles").as[String]
+            )
+            Ok(Json.obj(categoryMap(category) -> meta))
+          }
+        }
+      }
       case "Snow" => Ok
       case "Flight" => Ok
       case "River" => Ok
@@ -251,6 +278,37 @@ object Admin extends BaseController
       val wwoUrl = Play.application.configuration.getString("meta.api.wwo.url").get
       val wwoKey = Play.application.configuration.getString("meta.api.wwo.key").get
       val wwoDs = Play.application.configuration.getString("meta.api.wwo.dataset").get.split(",")
+      val url = "%s%s?%s&format=json&key=%s".format(wwoUrl, "/weather.ashx", "q=45%2C-2", wwoKey)
+
+      if (Logger.isDebugEnabled) {
+        Logger.debug("3rdParty: "  +url)
+      }
+
+      var map = Map[String, JsValue]()
+      val req = WS.url(url).get
+      val res = Await.result(req, 20 seconds)
+
+      val json = res.json
+      println("weather json: " + json)
+      val weatherJson = (json \ "data" \ "current_condition").as[List[JsObject]].head
+
+      wwoDs.map{ key =>
+        if (key.equals("weatherDesc")) {
+          map += (key -> (((weatherJson \ key).as[List[JsObject]].head) \ "value"))
+        } else {
+          map += (key -> (weatherJson \ key))
+        }
+      }
+
+      map
+    }
+  }
+
+  private def getWwoMarine: Future[Map[String, JsValue]] = {
+    Future {
+      val wwoUrl = Play.application.configuration.getString("meta.api.wwo.url").get
+      val wwoKey = Play.application.configuration.getString("meta.api.wwo.key").get
+      val wwoDs = Play.application.configuration.getString("meta.api.wwo.marine.dataset").get.split(",")
       val url = "%s%s?%s&format=json&key=%s".format(wwoUrl, "/marine.ashx", "q=45%2C-2", wwoKey)
 
       if (Logger.isDebugEnabled) {
@@ -266,6 +324,7 @@ object Admin extends BaseController
       val hourly = (weatherJson \ "hourly").as[List[JsObject]].head
 
       wwoDs.map{ key =>
+        println("map key : " + key)
         map += (key -> (hourly \ key))
       }
 
