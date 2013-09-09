@@ -195,6 +195,7 @@ object Admin extends BaseController
 
   val sierraAtTahoe = "CoQBdAAAANahspttjHfS875axpTChB9K17fFVW3beJ6l_4kTulu_eRbwAH1GzyGYL8KetHXcW-v1w66rLY3sUgd5Jpp0HrGTXoO7b7ad2zJCac8WjVJOAnUI9vuaZcaMu1fwyiGOfqzdnWL0kAb7A2rl0g7IZhShJfjSnyuy7q3FNoa3DWGvEhAzU1Ysyhf0HL_TD6Bd-PEJGhTjedH1ZjfDrBAOM4FI_sRw2xBGDg"
   val pillarPoint = "CoQBcgAAAKzJpbZ_I_TTCg1ZybQQL-nZDzGhMLDEAq6WlGYKC_cwcAyH046g9zsmJJP2hdUnaHnYCJmAicX8jaJcGFwjda_fI2m8cWNbQXfuT6GFNW4-eVNL2tf6Ai95EhXszyI6rpKvsS_LyjeEqODAF_d458XN_0Ccu8fgvzPodl9e351eEhCK6Ig6sxyq4tMFdE8q62vaGhSsEnVc23t82zzg_dQPTiKy2Rzbfw"
+  val portillo = "411008"
 
   val categoryMap = Map(
     "PVVqIA0NRI" -> "All/Custom",
@@ -266,14 +267,45 @@ object Admin extends BaseController
           }
         }
       }
-      case "Snow" => Ok
+      case "Snow" =>{
+        Async{
+          for {
+            sc <- getSnowCountry(portillo)
+          } yield {
+            val meta = Json.obj(
+            "resortName" -> sc("resortName").as[String]
+            )
+            Ok(Json.obj(categoryMap(category) -> meta))
+          }
+        }
+        }
       case "Flight" => Ok
       case "River" => Ok
       case "All/Custom" => Ok
       case _ => BadRequest("Unsupported category.")
     }
   }
+  private def getSnowCountry(id : String) : Future[Map[String, JsValue]] = {
+    Future {
+      val snowUrl = Play.application.configuration.getString("meta.api.snowCountry.url").get
+      val snowKey = Play.application.configuration.getString("meta.api.snowCountry.key").get
+      val url =  "%s?apiKey=%s&ids=%s&output=json".format(snowUrl,snowKey,id)
 
+      if (Logger.isDebugEnabled) {
+        Logger.debug("3rdParty: "  +url)
+      }
+      var map = Map[String, JsValue]()
+      val req = WS.url(url).get
+      val res = Await.result(req, 20 seconds)
+      val json = res.json
+
+      (json \ "items").as[List[JsObject]].map { i =>
+        map += ("resortName" -> (i \ "resortName"))
+      }
+      println("map    " +map)
+      map
+    }
+  }
   private def getWwo: Future[Map[String, JsValue]] = {
     Future {
       val wwoUrl = Play.application.configuration.getString("meta.api.wwo.url").get
