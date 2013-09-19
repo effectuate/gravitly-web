@@ -9,6 +9,7 @@ import play.api.Play.current
 import ly.gravit.web.dao.PhotoDao
 import ly.gravit.web.{ParseApi, Photo}
 import play.Logger
+import java.util.Date
 
 /**
  * Created with IntelliJ IDEA.
@@ -60,7 +61,8 @@ object PhotoDaoImpl extends PhotoDao {
         (json \ "filename").as[String],
         (json \ "user").as[String],
         (json \ "location").as[String],
-        (json \ "category").as[String]
+        (json \ "category").as[String],
+        Option((json \ "createdAt").as[Date])
       ))
     }
     opt

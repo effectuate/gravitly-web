@@ -80,8 +80,8 @@ object Admin extends BaseController
     
   }
 
-  //def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-  def postUpload = Action { implicit request =>
+  def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+  //def postUpload = Action { implicit request =>
     uploaderForm.bindFromRequest.fold(
       errors =>
         Async{
@@ -110,7 +110,7 @@ object Admin extends BaseController
 
             // Save Photo info on Parse
             val exif = exifData(filePart.ref.file)
-            create(Photo(null, uploadForm._1, filename, loggedIn.id, uploadForm._4,uploadForm._5))
+            create(Photo(null, uploadForm._1, filename, loggedIn.id, uploadForm._4,uploadForm._5, None))
           }
           case None => {
             if(Logger.isDebugEnabled) {

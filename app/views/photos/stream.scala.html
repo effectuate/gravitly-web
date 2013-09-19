@@ -1,4 +1,4 @@
-@(photos: scala.collection.mutable.HashMap[String, Tuple4[ly.gravit.web.Photo, ly.gravit.web.auth.Account,
+@(photos: scala.collection.mutable.LinkedHashMap[String, Tuple4[ly.gravit.web.Photo, ly.gravit.web.auth.Account,
     ly.gravit.web.Location, ly.gravit.web.Category]])(implicit imagePath: String)
 
 @main("Gravitly Photo") {
@@ -7,12 +7,12 @@
     <div class="grid_12">
         <div class="profile-info-wrapper">
             <div class="avatar-container">
-                <img src="@routes.Assets.at("images/gravitly.png")"><img>
+                <img src=@routes.Assets.at("images/gravitly-mini.png")>
             </div>
 
             <div class="description-container">
                 <h1>
-                    Leonardo Dapdap
+                    @photos.head._2._2.name
                 </h1>
                 <p>
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis, fugit, quasi placeat impedit vitae cumque officia et perferendis temporibus ipsam tenetur ut laborum quo perspiciatis.<a class="link" href="#"> http://gravit.ly</a>
@@ -109,7 +109,7 @@
                 </div>
                 <div class="timestamp-container">
                     <div class="icon-gray-time"></div>
-                    <div class="post-timestamp">August 11, 2013 13:17 PST</div>
+                    <div class="post-timestamp">@v._1.dateCreated</div>
                 </div>
             </div>
             <div class="share-post">
