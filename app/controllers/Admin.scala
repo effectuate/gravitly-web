@@ -80,8 +80,8 @@ object Admin extends BaseController
     
   }
 
-  def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-  //def postUpload = Action { implicit request =>
+  //def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+  def postUpload = Action { implicit request =>
     uploaderForm.bindFromRequest.fold(
       errors =>
         Async{
