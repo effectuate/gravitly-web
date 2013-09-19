@@ -105,14 +105,13 @@ object Photos extends BaseController with ParseApiConnectivity {
   def siteMap = Action {implicit request =>
     val query = parseApiConnect(CLASS_PHOTO)
       .withQueryString("order" -> "-createdAt")
-      .withQueryString("include" -> "user,location,category")
 
     Async {
       query.get.map {res =>
         val resultJson = res.json
-        println("#### photosByJson: " + resultJson)
+        //println("#### photosByJson: " + resultJson)
 
-        val photoMap = new mutable.LinkedHashMap[String, Tuple4[Photo, Account, Location, Category]]()
+        val photoMap = new mutable.LinkedHashMap[String, Photo]()
 
         (resultJson \ "results").as[List[JsObject]].map {json =>
           val photo = Option(Photo((json \ "objectId").as[String],
@@ -121,16 +120,7 @@ object Photos extends BaseController with ParseApiConnectivity {
             (json \ "category" \ "objectId").as[String], (json \ "createdAt").asOpt[Date]
           ))
 
-          val account = Option(Account((json \ "user" \ "objectId").as[String],
-            null, null, (json \ "user" \ "username").as[String], null))
-
-          val location = Option(Location((json \ "location" \ "objectId").as[String],
-            (json \ "location" \ "name").as[String]))
-
-          val category = Option(Category((json \ "category" \ "objectId").as[String],
-            (json \ "category" \ "name").as[String]))
-
-          photoMap put (photo.get.id, (photo.get, account.get, location.get, category.get))
+          photoMap put (photo.get.id, photo.get)
         }
 
         Ok(views.xml.photos.stream(photoMap))

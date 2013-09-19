@@ -1,11 +1,10 @@
-@(photos: scala.collection.mutable.LinkedHashMap[String, Tuple4[ly.gravit.web.Photo, ly.gravit.web.auth.Account,
-        ly.gravit.web.Location, ly.gravit.web.Category]])(implicit request: RequestHeader)<?xml version="1.0" encoding="UTF-8"?>
+@(photos: scala.collection.mutable.LinkedHashMap[String, ly.gravit.web.Photo])(implicit request: RequestHeader)<?xml version="1.0" encoding="UTF-8"?>
 
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 @for((k,v) <- photos) {
   <url>
     <loc>http://@request.headers("Host")/photos/@k</loc>
-    <lastmod>@v._1.dateCreated</lastmod>
+    <lastmod>@v.dateCreated</lastmod>
     <changefreq>never</changefreq>
     <priority>0.5</priority>
   </url>
