@@ -12,6 +12,6 @@ import play.api.mvc.{Action, Controller}
 object SiteMap extends Controller {
    def index = Action {
 
-     Ok(views.xml.sitemap())
+     Ok("<foo></foo>")
    }
 }
