@@ -1,6 +1,7 @@
 import sbt._
 import Keys._
 import play.Project._
+import cloudbees.Plugin._
 
 object ApplicationBuild extends Build {
 
@@ -22,4 +23,6 @@ object ApplicationBuild extends Build {
     resolvers += "Rhinofly Internal Repository" at "http://maven-repository.rhinofly.net:8081/artifactory/libs-release-local"
 
   )
+    .settings(cloudBeesSettings :_*)
+    .settings(CloudBees.applicationId := Some("webnuggets/webapi"))
 }
