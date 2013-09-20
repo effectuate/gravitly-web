@@ -14,7 +14,6 @@ object ApplicationBuild extends Build {
     anorm,
     "nl.rhinofly" %% "api-s3" % "3.1.0",
     "com.drewnoakes" % "metadata-extractor" % "2.6.2",
-    "org.scalaz" %% "scalaz-core" % "7.0.3",
     "jp.t2v" %% "play2.auth"      % "0.10.1",
     "jp.t2v" %% "play2.auth.test" % "0.10.1" % "test"
   )

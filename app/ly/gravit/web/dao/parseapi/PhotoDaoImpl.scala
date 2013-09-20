@@ -56,13 +56,14 @@ object PhotoDaoImpl extends PhotoDao {
     if (res.status == 200) {
       val json = res.json
       opt = Option(Photo(
-        (json \ "objectId").as[String],
+        Option((json \ "objectId").as[String]),
         (json \ "caption").as[String],
         (json \ "filename").as[String],
         (json \ "user").as[String],
         (json \ "location").as[String],
         (json \ "category").as[String],
-        Option((json \ "createdAt").as[Date])
+        Option((json \ "createdAt").as[Date]),
+        None,None,None,None,None
       ))
     }
     opt

@@ -17,9 +17,6 @@ import play.api.libs.json._
 import views.html._
 import ly.gravit.web.auth._
 import ly.gravit.web._
-import ly.gravit.web.Photo
-import scalaz._
-import Scalaz._
 import play.api.libs.json.Json._
 import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.{Tag, Directory, Metadata}
@@ -28,7 +25,8 @@ import play.api.libs.json.JsArray
 import scala.Some
 import ly.gravit.web.Photo
 import play.api.libs.json.JsObject
-import scala.collection.mutable
+import com.drew.metadata.exif.{GpsDirectory, ExifSubIFDDirectory}
+import com.drew.lang.GeoLocation
 
 /**
  * Created with IntelliJ IDEA.
@@ -110,7 +108,12 @@ object Admin extends BaseController
 
             // Save Photo info on Parse
             val exif = exifData(filePart.ref.file)
-            create(Photo(null, uploadForm._1, filename, "LsmI34VlUu"/*loggedIn.id*/, uploadForm._4,uploadForm._5, None))
+            create(Photo(null, uploadForm._1, filename, "LsmI34VlUu"/*loggedIn.id*/, uploadForm._4,uploadForm._5, None,
+              Option(exif.getOrElse("latitude", 0).asInstanceOf[Double]),
+              Option(exif.getOrElse("longitude", 0).asInstanceOf[Double]),
+              Option(exif.getOrElse("altitude", 0).asInstanceOf[Double]),
+              Option(exif.getOrElse("width", 0).asInstanceOf[Int]),
+              Option(exif.getOrElse("height", 0).asInstanceOf[Int])))
           }
           case None => {
             if(Logger.isDebugEnabled) {
@@ -138,6 +141,13 @@ object Admin extends BaseController
 
     reqParams.append(""""caption":"%s",""".format(photo.caption))
     reqParams.append(""""filename":"%s",""".format(photo.filename))
+
+    reqParams.append(""""width":%s,""".format(photo.width.getOrElse(0)))
+    reqParams.append(""""height":%s,""".format(photo.height.getOrElse(0)))
+    reqParams.append(""""latitude":%s,""".format(photo.latitude.getOrElse(0)))
+    reqParams.append(""""longitude":%s,""".format(photo.longitude.getOrElse(0)))
+    reqParams.append(""""altitude":%s,""".format(photo.altitude.getOrElse(0)))
+
     reqParams.append(""""user":{"__type":"Pointer","className":"_User","objectId":"%s"},""".format(photo.userId))
     reqParams.append(""""category":{"__type":"Pointer","className":"Category","objectId":"%s"},""".format(photo.categoryId))
     reqParams.append(""""location":{"__type":"Pointer","className":"Location","objectId":"%s"}""".format(photo.locationId))
@@ -159,38 +169,28 @@ object Admin extends BaseController
     None
   }
 
-  /*
-    #### EXIF TAG: [Jpeg] Compression Type - Baseline
-    #### EXIF TAG: [Jpeg] Data Precision - 8 bits
-    #### EXIF TAG: [Jpeg] Image Height - 308 pixels
-    #### EXIF TAG: [Jpeg] Image Width - 545 pixels
-    #### EXIF TAG: [Jpeg] Number of Components - 3
-    #### EXIF TAG: [Jpeg] Component 1 - Y component: Quantization table 0, Sampling factors 2 horiz/2 vert
-    #### EXIF TAG: [Jpeg] Component 2 - Cb component: Quantization table 1, Sampling factors 1 horiz/1 vert
-    #### EXIF TAG: [Jpeg] Component 3 - Cr component: Quantization table 1, Sampling factors 1 horiz/1 vert
-    #### EXIF TAG: [Jfif] Version - 1.2
-    #### EXIF TAG: [Jfif] Resolution Units - none
-    #### EXIF TAG: [Jfif] X Resolution - 100 dots
-    #### EXIF TAG: [Jfif] Y Resolution - 100 dots
-    #### EXIF TAG: [Adobe Jpeg] DCT Encode Version - 1
-    #### EXIF TAG: [Adobe Jpeg] Flags 0 - 192
-    #### EXIF TAG: [Adobe Jpeg] Flags 1 - 0
-    #### EXIF TAG: [Adobe Jpeg] Color Transform - YCbCr
-   */
   private def exifData(imageFile: File) = {
+    var exifData = Map[String, Any]()
     val metadata: Metadata = ImageMetadataReader.readMetadata(imageFile)
-    val iter: java.util.Iterator[Directory] = metadata.getDirectories.iterator
 
-    while(iter.hasNext) {
-      val directory = iter.next
-      val tagIter = directory.getTags.iterator
+    val subIfd = metadata.getDirectory(classOf[ExifSubIFDDirectory])
 
-      while (tagIter.hasNext) {
-        val tag = tagIter.next
+    if (subIfd != null) {
+      exifData += ("width" -> subIfd.getInt(ExifSubIFDDirectory.TAG_EXIF_IMAGE_WIDTH))
+      exifData += ("height" -> subIfd.getInt(ExifSubIFDDirectory.TAG_EXIF_IMAGE_HEIGHT))
+    }
 
-        println("#### EXIF TAG: " + tag)
+    val geo = metadata.getDirectory(classOf[GpsDirectory])
+
+    if (geo != null) {
+      val geoLocation: GeoLocation = geo.getGeoLocation()
+      if (geoLocation != null) {
+        exifData += ("latitude" -> geoLocation.getLatitude)
+        exifData += ("longitude" -> geoLocation.getLongitude)
+        exifData += ("altitude" -> geo.getDouble(GpsDirectory.TAG_GPS_ALTITUDE))
       }
     }
+    exifData
   }
 
   val sierraAtTahoe = "CoQBdAAAANahspttjHfS875axpTChB9K17fFVW3beJ6l_4kTulu_eRbwAH1GzyGYL8KetHXcW-v1w66rLY3sUgd5Jpp0HrGTXoO7b7ad2zJCac8WjVJOAnUI9vuaZcaMu1fwyiGOfqzdnWL0kAb7A2rl0g7IZhShJfjSnyuy7q3FNoa3DWGvEhAzU1Ysyhf0HL_TD6Bd-PEJGhTjedH1ZjfDrBAOM4FI_sRw2xBGDg"
