@@ -19,10 +19,19 @@ if [ ! -e "/home/vagrant/.firstboot" ]; then
   ln -s /opt/play-2.1.3/play /usr/bin/play  
   chown -R vagrant:vagrant /opt/play-2.1.3
 
+  curl -L cloudbees-downloads.s3.amazonaws.com/sdk/cloudbees-sdk-1.5.0-bin.zip > bees_sdk.zip
+  unzip bees_sdk.zip
+  chown -R vagrant:vagrant /opt/cloudbees-sdk-1.5.0
   mkdir /home/vagrant/.bees
-  mv /vagrant/bees.config.template /home/vagrant/bees.config
-  touch /home/vagrant/.firstboot
+  mv /vagrant/bees.config.template /home/vagrant/.bees/bees.config  
 
+  mv /etc/localtime /etc/localtime.bak
+  ln -s /usr/share/zoneinfo/Asia/Manila /etc/localtime
+
+  touch /home/vagrant/.firstboot
   reboot
 fi
+
+export BEES_HOME=/opt/cloudbees-sdk-1.5.0
+export PATH=$PATH:$BEES_HOME
 
