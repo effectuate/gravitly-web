@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="SBT: nl.rhinofly:api-s3_2.10:3.1.0">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../java_tools/play-2.1.3/repository/cache/nl.rhinofly/api-s3_2.10/jars/api-s3_2.10-3.1.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
