@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SBT: com.adobe.xmp:xmpcore:5.1.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../java_tools/play-2.1.3/repository/cache/com.adobe.xmp/xmpcore/jars/xmpcore-5.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

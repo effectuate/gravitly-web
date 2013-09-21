@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SBT: jp.t2v:stackable-controller_2.10:0.2.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../java_tools/play-2.1.3/repository/cache/jp.t2v/stackable-controller_2.10/jars/stackable-controller_2.10-0.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

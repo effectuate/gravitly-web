@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="play-parseapi_2.10.jar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/play-parseapi_2.10.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
