@@ -1,0 +1,7 @@
+#CloudBees SDK config
+bees.api.secret=N8XRQRYOL2P2WGRGUGYTLMCWM8HDKLI1IIDBGV2AN8K=
+bees.api.url=https\://api.cloudbees.com/api
+bees.api.key=4F3D2D153CC9EDB3
+bees.api.url.eu=https\://api-eu.cloudbees.com/api
+bees.project.app.domain=dynobjx
+bees.api.url.us=https\://api.cloudbees.com/api

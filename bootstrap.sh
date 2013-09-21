@@ -19,6 +19,8 @@ if [ ! -e "/home/vagrant/.firstboot" ]; then
   ln -s /opt/play-2.1.3/play /usr/bin/play  
   chown -R vagrant:vagrant /opt/play-2.1.3
 
+  mkdir /home/vagrant/.bees
+  mv /vagrant/bees.config.template /home/vagrant/bees.config
   touch /home/vagrant/.firstboot
 
   reboot
