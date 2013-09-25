@@ -1,5 +1,4 @@
-
-@(form: Form[(String, Int, Int, String, String)],
+@(form: Form[(String, String, String)],
 location : List[ly.gravit.web.Location],
 category : List[ly.gravit.web.Category])
 
@@ -10,9 +9,6 @@ category : List[ly.gravit.web.Category])
 
   @helper.form(routes.Admin.postUpload, 'enctype -> "multipart/form-data" ) {
     <input type="text" name="caption" placeholder="Caption" size="30">
-    <br>
-    <input type="text" name="width" placeholder="Width">
-    <input type="text" name="height" placeholder="Height">
     <br>
     <select name="location">
       <option value="-1">[ Select Location ]</option>
