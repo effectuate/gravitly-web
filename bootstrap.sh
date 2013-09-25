@@ -23,7 +23,7 @@ if [ ! -e "/home/vagrant/.firstboot" ]; then
   unzip bees_sdk.zip
   chown -R vagrant:vagrant /opt/cloudbees-sdk-1.5.0
   mkdir /home/vagrant/.bees
-  mv /vagrant/bees.config.template /home/vagrant/.bees/bees.config  
+  cp /vagrant/bees.config.template /home/vagrant/.bees/bees.config  
 
   mv /etc/localtime /etc/localtime.bak
   ln -s /usr/share/zoneinfo/Asia/Manila /etc/localtime
