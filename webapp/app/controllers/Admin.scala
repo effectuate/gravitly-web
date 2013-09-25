@@ -63,8 +63,6 @@ object Admin extends BaseController
   val uploaderForm = Form(
     tuple(
       "caption" -> nonEmptyText,
-      "width" -> number,
-      "height" -> number,
       "location" -> nonEmptyText,
       "category" -> nonEmptyText
     )
@@ -81,7 +79,10 @@ object Admin extends BaseController
   //def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
   def postUpload = Action { implicit request =>
     uploaderForm.bindFromRequest.fold(
-      errors =>
+      errors => {
+        if(Logger.isDebugEnabled) {
+          Logger.debug("### Upload Errors: " + errors)
+        }
         Async{
         Details.getLocations.map{ loc =>
           Async{
@@ -89,9 +90,9 @@ object Admin extends BaseController
               BadRequest(admin.upload(errors,loc.toList,cat.toList))
             }
           }
-
         }
-       },
+       }
+      },
       uploadForm => {
         if(Logger.isDebugEnabled) {
           Logger.debug("### UploadForm: " + uploadForm)
@@ -108,10 +109,10 @@ object Admin extends BaseController
 
             // Save Photo info on Parse
             val exif = exifData(filePart.ref.file)
-            create(Photo(null, uploadForm._1, filename, "LsmI34VlUu"/*loggedIn.id*/, uploadForm._4,uploadForm._5, None,
-              Option(exif.getOrElse("latitude", 0).asInstanceOf[Double]),
-              Option(exif.getOrElse("longitude", 0).asInstanceOf[Double]),
-              Option(exif.getOrElse("altitude", 0).asInstanceOf[Double]),
+            create(Photo(null, uploadForm._1, filename, "LsmI34VlUu"/*loggedIn.id*/, uploadForm._2,uploadForm._3, None,
+              Option(exif.getOrElse("latitude", 0.0).asInstanceOf[Double]),
+              Option(exif.getOrElse("longitude", 0.0).asInstanceOf[Double]),
+              Option(exif.getOrElse("altitude", 0.0).asInstanceOf[Double]),
               Option(exif.getOrElse("width", 0).asInstanceOf[Int]),
               Option(exif.getOrElse("height", 0).asInstanceOf[Int])))
           }
