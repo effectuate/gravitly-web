@@ -48,7 +48,9 @@ object Photos extends BaseController with ParseApiConnectivity {
           (json \ "user" \ "objectId").as[String], (json \ "location" \ "objectId").as[String],
           (json \ "category" \ "objectId").as[String], (json \ "createdAt").asOpt[Date],
           (json \ "latitude").asOpt[Double],
+          (json \ "latitudeRef").asOpt[String],
           (json \ "longitude").asOpt[Double],
+          (json \ "longitudeRef").asOpt[String],
           (json \ "altitude").asOpt[Double],
           (json \ "width").asOpt[Int],
           (json \ "height").asOpt[Int]
@@ -91,7 +93,9 @@ object Photos extends BaseController with ParseApiConnectivity {
           (json \ "user" \ "objectId").as[String], (json \ "location" \ "objectId").as[String],
           (json \ "category" \ "objectId").as[String], (json \ "createdAt").asOpt[Date],
           (json \ "latitude").asOpt[Double],
+          (json \ "latitudeRef").asOpt[String],
           (json \ "longitude").asOpt[Double],
+          (json \ "longitudeRef").asOpt[String],
           (json \ "altitude").asOpt[Double],
           (json \ "width").asOpt[Int],
           (json \ "height").asOpt[Int]
@@ -132,7 +136,9 @@ object Photos extends BaseController with ParseApiConnectivity {
             (json \ "user" \ "objectId").as[String], (json \ "location" \ "objectId").as[String],
             (json \ "category" \ "objectId").as[String], (json \ "createdAt").asOpt[Date],
             (json \ "latitude").asOpt[Double],
+            (json \ "latitudeRef").asOpt[String],
             (json \ "longitude").asOpt[Double],
+            (json \ "longitudeRef").asOpt[String],
             (json \ "altitude").asOpt[Double],
             (json \ "width").asOpt[Int],
             (json \ "height").asOpt[Int]

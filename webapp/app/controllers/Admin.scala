@@ -111,7 +111,9 @@ object Admin extends BaseController
             val exif = exifData(filePart.ref.file)
             create(Photo(null, uploadForm._1, filename, "LsmI34VlUu"/*loggedIn.id*/, uploadForm._2,uploadForm._3, None,
               Option(exif.getOrElse("latitude", 0.0).asInstanceOf[Double]),
+              Option(exif.getOrElse("latitudeRef", "").asInstanceOf[String]),
               Option(exif.getOrElse("longitude", 0.0).asInstanceOf[Double]),
+              Option(exif.getOrElse("longitudeRef", "").asInstanceOf[String]),
               Option(exif.getOrElse("altitude", 0.0).asInstanceOf[Double]),
               Option(exif.getOrElse("width", 0).asInstanceOf[Int]),
               Option(exif.getOrElse("height", 0).asInstanceOf[Int])))
@@ -122,17 +124,7 @@ object Admin extends BaseController
             }
           }
         }
-        Async{
-          Details.getLocations.map{loc =>
-            Async{
-              Details.getCategories.map{ cat =>
-                Ok(admin.upload(uploaderForm,loc.toList, cat.toList))
-              }
-            }
-
-          }
-        }
-
+        Redirect(routes.Admin.upload())
       }
     )
   }
@@ -145,8 +137,24 @@ object Admin extends BaseController
 
     reqParams.append(""""width":%s,""".format(photo.width.getOrElse(0)))
     reqParams.append(""""height":%s,""".format(photo.height.getOrElse(0)))
-    reqParams.append(""""latitude":%s,""".format(photo.latitude.getOrElse(0)))
-    reqParams.append(""""longitude":%s,""".format(photo.longitude.getOrElse(0)))
+    //reqParams.append(""""latitude":%s,""".format(photo.latitude.getOrElse(0)))
+    //reqParams.append(""""longitude":%s,""".format(photo.longitude.getOrElse(0)))
+    photo.latitude match {
+      case Some(lat) => reqParams.append(""""latitude":%s,""".format(lat))
+      case None => /**/
+    }
+    photo.latitudeRef match {
+      case Some(latRef) => reqParams.append(""""latitudeRef":"%s",""".format(latRef))
+      case None => /**/
+    }
+    photo.longitude match {
+      case Some(long) => reqParams.append(""""longitude":%s,""".format(long))
+      case None => /**/
+    }
+    photo.longitudeRef match {
+      case Some(longRef) => reqParams.append(""""longitudeRef":"%s",""".format(longRef))
+      case None => /**/
+    }
     reqParams.append(""""altitude":%s,""".format(photo.altitude.getOrElse(0)))
 
     reqParams.append(""""user":{"__type":"Pointer","className":"_User","objectId":"%s"},""".format(photo.userId))
@@ -187,7 +195,9 @@ object Admin extends BaseController
       val geoLocation: GeoLocation = geo.getGeoLocation()
       if (geoLocation != null) {
         exifData += ("latitude" -> geoLocation.getLatitude)
+        exifData += ("latitudeRef" -> geo.getString(GpsDirectory.TAG_GPS_LATITUDE_REF))
         exifData += ("longitude" -> geoLocation.getLongitude)
+        exifData += ("longitudeRef" -> geo.getString(GpsDirectory.TAG_GPS_LONGITUDE_REF))
         exifData += ("altitude" -> geo.getDouble(GpsDirectory.TAG_GPS_ALTITUDE))
       }
     }

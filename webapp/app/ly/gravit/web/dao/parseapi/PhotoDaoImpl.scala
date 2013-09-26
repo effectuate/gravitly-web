@@ -63,7 +63,7 @@ object PhotoDaoImpl extends PhotoDao {
         (json \ "location").as[String],
         (json \ "category").as[String],
         Option((json \ "createdAt").as[Date]),
-        None,None,None,None,None
+        None,None,None,None,None,None,None
       ))
     }
     opt

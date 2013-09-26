@@ -99,17 +99,25 @@
             <a href="/photos/@k"><img src="@imagePath/@v._1.filename" alt="@v._1.caption" width="612" height="612"></a>
         </div>
         <div class="post-description">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis, fugit, quasi placeat impedit vitae cumque officia et perfe. <a class="hashtag"  href="#">#dolor </a><a class="hashtag" href="#"> #sit</a><a class="hashtag" href="#"> #amet </a><a class="hashtag" href="#">#consectetur</a><a class="hashtag" href="#"> #adipisicing </a><a class="hashtag" href="#">#obis</a><a class="hashtag"  href="#"> #quasi</a>
+            @v._1.caption <a class="hashtag"  href="#">#dolor </a><a class="hashtag" href="#"> #sit</a><a class="hashtag" href="#"> #amet </a><a class="hashtag" href="#">#consectetur</a><a class="hashtag" href="#"> #adipisicing </a><a class="hashtag" href="#">#obis</a><a class="hashtag"  href="#"> #quasi</a>
         </div>
         <div class="post-details">
             <div class="details">
+              @(v._1.latitude, v._1.longitude) match {
+
+                case (Some(lat), Some(long)) => {
                 <div class="geolocation-container">
                     <div class="icon-gray-compass"></div>
-                    <div class="post-geolocation">12.5969 N, 85.8795 W</div>
+                    <div class="post-geolocation">@lat @v._1.latitudeRef, @long @v._1.longitudeRef</div>
                 </div>
+                }
+
+                case _ => {}
+
+              }
                 <div class="timestamp-container">
                     <div class="icon-gray-time"></div>
-                    <div class="post-timestamp">@v._1.dateCreated</div>
+                    <div class="post-timestamp">@v._1.dateCreated.get.format("EEE MMM dd yyyy")</div>
                 </div>
             </div>
             <div class="share-post">
