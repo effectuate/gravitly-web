@@ -17,32 +17,20 @@ case class Photo(id: Option[String], caption: String, filename: String, userId: 
     reqParams.append(""""width":%s,""".format(this.width.getOrElse(0)))
     reqParams.append(""""height":%s,""".format(this.height.getOrElse(0)))
 
-    this.latitude match {
-      case Some(lat) => reqParams.append(""""latitude":%s,""".format(lat))
-      case None => /**/
+    (this.latitude, this.latitudeRef, this.longitude, this.longitudeRef) match {
+      case (Some(lat), Some(latRef), Some(long), Some(longRef))=> {
+        reqParams.append(""""latitude":%s,""".format(lat))
+        reqParams.append(""""latitudeRef":"%s",""".format(latRef))
+        reqParams.append(""""longitude":%s,""".format(long))
+        reqParams.append(""""longitudeRef":"%s",""".format(longRef))
+        reqParams.append(""""geoPoint":{"__type":"GeoPoint","latitude":%s, "longitude":%s},""".format(lat, long))
+      }
+      case _ => /*noop*/
     }
-    this.latitudeRef match {
-      case Some(latRef) => reqParams.append(""""latitudeRef":"%s",""".format(latRef))
-      case None => /**/
-    }
-    this.longitude match {
-      case Some(long) => reqParams.append(""""longitude":%s,""".format(long))
-      case None => /**/
-    }
-    this.longitudeRef match {
-      case Some(longRef) => reqParams.append(""""longitudeRef":"%s",""".format(longRef))
-      case None => /**/
-    }
+
     this.altitude match {
       case Some(alt) => reqParams.append(""""altitude":%s,""".format(alt))
       case None => /**/
-    }
-
-    (this.latitude, this.longitude) match {
-      case (Some(lat), Some(long)) => {
-        reqParams.append(""""geoPoint":{"__type":"GeoPoint","latitude":%s,"longitude":%s},""".format(lat, long))
-      }
-      case _ => /* noop */
     }
 
     reqParams.append(""""user":{"__type":"Pointer","className":"_User","objectId":"%s"},""".format(this.userId))
