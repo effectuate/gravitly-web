@@ -42,19 +42,7 @@ object Photos extends BaseController with ParseApiConnectivity {
       query.get.map { res =>
         val json = res.json
         //println("#### json: " + json)
-        val photo = Option(Photo(
-          Option((json \ "objectId").as[String]),
-          (json \ "caption").as[String], (json \ "filename").as[String],
-          (json \ "user" \ "objectId").as[String], (json \ "location" \ "objectId").as[String],
-          (json \ "category" \ "objectId").as[String], (json \ "createdAt").asOpt[Date],
-          (json \ "latitude").asOpt[Double],
-          (json \ "latitudeRef").asOpt[String],
-          (json \ "longitude").asOpt[Double],
-          (json \ "longitudeRef").asOpt[String],
-          (json \ "altitude").asOpt[Double],
-          (json \ "width").asOpt[Int],
-          (json \ "height").asOpt[Int]
-        ))
+        val photo = Option(Photo.fromJson(json))
 
         val account = Option(Account((json \ "user" \ "objectId").as[String],
           null, null, (json \ "user" \ "username").as[String], null))
@@ -87,19 +75,7 @@ object Photos extends BaseController with ParseApiConnectivity {
         val photoMap = new mutable.LinkedHashMap[String, Tuple4[Photo, Account, Location, Category]]()
 
         (resultJson \ "results").as[List[JsObject]].map {json =>
-        val photo = Option(Photo(
-          Option((json \ "objectId").as[String]),
-          (json \ "caption").as[String], (json \ "filename").as[String],
-          (json \ "user" \ "objectId").as[String], (json \ "location" \ "objectId").as[String],
-          (json \ "category" \ "objectId").as[String], (json \ "createdAt").asOpt[Date],
-          (json \ "latitude").asOpt[Double],
-          (json \ "latitudeRef").asOpt[String],
-          (json \ "longitude").asOpt[Double],
-          (json \ "longitudeRef").asOpt[String],
-          (json \ "altitude").asOpt[Double],
-          (json \ "width").asOpt[Int],
-          (json \ "height").asOpt[Int]
-        ))
+        val photo = Option(Photo.fromJson(json))
 
         val account = Option(Account((json \ "user" \ "objectId").as[String],
           null, null, (json \ "user" \ "username").as[String], null))
@@ -130,19 +106,7 @@ object Photos extends BaseController with ParseApiConnectivity {
         val photoMap = new mutable.LinkedHashMap[String, Photo]()
 
         (resultJson \ "results").as[List[JsObject]].map {json =>
-          val photo = Option(Photo(
-            Option((json \ "objectId").as[String]),
-            (json \ "caption").as[String], (json \ "filename").as[String],
-            (json \ "user" \ "objectId").as[String], (json \ "location" \ "objectId").as[String],
-            (json \ "category" \ "objectId").as[String], (json \ "createdAt").asOpt[Date],
-            (json \ "latitude").asOpt[Double],
-            (json \ "latitudeRef").asOpt[String],
-            (json \ "longitude").asOpt[Double],
-            (json \ "longitudeRef").asOpt[String],
-            (json \ "altitude").asOpt[Double],
-            (json \ "width").asOpt[Int],
-            (json \ "height").asOpt[Int]
-          ))
+          val photo = Option(Photo.fromJson(json))
 
           photoMap put (photo.get.id.get, photo.get)
         }

@@ -64,7 +64,8 @@ object Admin extends BaseController
     tuple(
       "caption" -> nonEmptyText,
       "location" -> nonEmptyText,
-      "category" -> nonEmptyText
+      "category" -> nonEmptyText,
+      "isPrivate" -> boolean
     )
   )
   
@@ -116,7 +117,8 @@ object Admin extends BaseController
               Option(exif.getOrElse("longitudeRef", "").asInstanceOf[String]),
               Option(exif.getOrElse("altitude", 0.0).asInstanceOf[Double]),
               Option(exif.getOrElse("width", 0).asInstanceOf[Int]),
-              Option(exif.getOrElse("height", 0).asInstanceOf[Int])))
+              Option(exif.getOrElse("height", 0).asInstanceOf[Int]),
+              uploadForm._4))
           }
           case None => {
             if(Logger.isDebugEnabled) {
@@ -130,41 +132,10 @@ object Admin extends BaseController
   }
 
   private def create(photo: Photo): Option[String] = {
-    val reqParams = new StringBuilder(512)
-
-    reqParams.append(""""caption":"%s",""".format(photo.caption))
-    reqParams.append(""""filename":"%s",""".format(photo.filename))
-
-    reqParams.append(""""width":%s,""".format(photo.width.getOrElse(0)))
-    reqParams.append(""""height":%s,""".format(photo.height.getOrElse(0)))
-    //reqParams.append(""""latitude":%s,""".format(photo.latitude.getOrElse(0)))
-    //reqParams.append(""""longitude":%s,""".format(photo.longitude.getOrElse(0)))
-    photo.latitude match {
-      case Some(lat) => reqParams.append(""""latitude":%s,""".format(lat))
-      case None => /**/
-    }
-    photo.latitudeRef match {
-      case Some(latRef) => reqParams.append(""""latitudeRef":"%s",""".format(latRef))
-      case None => /**/
-    }
-    photo.longitude match {
-      case Some(long) => reqParams.append(""""longitude":%s,""".format(long))
-      case None => /**/
-    }
-    photo.longitudeRef match {
-      case Some(longRef) => reqParams.append(""""longitudeRef":"%s",""".format(longRef))
-      case None => /**/
-    }
-    reqParams.append(""""altitude":%s,""".format(photo.altitude.getOrElse(0)))
-
-    reqParams.append(""""user":{"__type":"Pointer","className":"_User","objectId":"%s"},""".format(photo.userId))
-    reqParams.append(""""category":{"__type":"Pointer","className":"Category","objectId":"%s"},""".format(photo.categoryId))
-    reqParams.append(""""location":{"__type":"Pointer","className":"Location","objectId":"%s"}""".format(photo.locationId))
-
     val req = parseApiConnect(CLASS_PHOTO)
       .withHeaders(PARSE_API_HEADER_CONTENT_TYPE -> CONTENT_TYPE_JSON)
 
-    val res =  Await.result(req.post("{%s}".format(reqParams.toString)), WS_TIMEOUT seconds)
+    val res =  Await.result(req.post("{%s}".format(photo.parseApiRequest)), WS_TIMEOUT seconds)
     println("### result: " + res.status + " | " +res.json)
     if (res.status == 201) {
       val objectId = (res.json \ "objectId").as[String]
