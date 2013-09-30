@@ -111,11 +111,11 @@ object Admin extends BaseController
             // Save Photo info on Parse
             val exif = exifData(filePart.ref.file)
             create(Photo(null, uploadForm._1, filename, "LsmI34VlUu"/*loggedIn.id*/, uploadForm._2,uploadForm._3, None,
-              Option(exif.getOrElse("latitude", 0.0).asInstanceOf[Double]),
-              Option(exif.getOrElse("latitudeRef", "").asInstanceOf[String]),
-              Option(exif.getOrElse("longitude", 0.0).asInstanceOf[Double]),
-              Option(exif.getOrElse("longitudeRef", "").asInstanceOf[String]),
-              Option(exif.getOrElse("altitude", 0.0).asInstanceOf[Double]),
+              nonEmptyDouble(exif.get("latitude")),
+              Option(exif.getOrElse("latitudeRef", null).asInstanceOf[String]),
+              nonEmptyDouble(exif.get("longitude")),
+              Option(exif.getOrElse("longitudeRef", null).asInstanceOf[String]),
+              nonEmptyDouble(exif.get("altitude")),
               Option(exif.getOrElse("width", 0).asInstanceOf[Int]),
               Option(exif.getOrElse("height", 0).asInstanceOf[Int]),
               uploadForm._4))
@@ -129,6 +129,20 @@ object Admin extends BaseController
         Redirect(routes.Admin.upload())
       }
     )
+  }
+
+  private def nonEmptyDouble(value: Option[Any]): Option[Double] = value match {
+    case Some(v) => {
+      if (v.isInstanceOf[Number]) {
+        val d = v.asInstanceOf[Number].doubleValue()
+
+        if (d > 0) {
+          return Some(d)
+        }
+      }
+      None
+    }
+    case _ => None
   }
 
   private def create(photo: Photo): Option[String] = {
