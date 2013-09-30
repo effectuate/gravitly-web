@@ -38,6 +38,13 @@ case class Photo(id: Option[String], caption: String, filename: String, userId: 
       case None => /**/
     }
 
+    (this.latitude, this.longitude) match {
+      case (Some(lat), Some(long)) => {
+        reqParams.append(""""geoPoint":{"__type":"GeoPoint","latitude":%s,"longitude":%s},""".format(lat, long))
+      }
+      case _ => /* noop */
+    }
+
     reqParams.append(""""user":{"__type":"Pointer","className":"_User","objectId":"%s"},""".format(this.userId))
     reqParams.append(""""category":{"__type":"Pointer","className":"Category","objectId":"%s"},""".format(this.categoryId))
     reqParams.append(""""location":{"__type":"Pointer","className":"Location","objectId":"%s"}""".format(this.locationId))
