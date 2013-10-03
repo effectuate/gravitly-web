@@ -1,6 +1,6 @@
 package controllers
 
-import java.util.UUID
+import java.util.{Date, UUID}
 import java.io.File
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
@@ -25,7 +25,7 @@ import play.api.libs.json.JsArray
 import scala.Some
 import ly.gravit.web.Photo
 import play.api.libs.json.JsObject
-import com.drew.metadata.exif.{GpsDirectory, ExifSubIFDDirectory}
+import com.drew.metadata.exif.{ExifIFD0Directory, GpsDirectory, ExifSubIFDDirectory}
 import com.drew.lang.GeoLocation
 
 /**
@@ -106,7 +106,7 @@ object Admin extends BaseController
             val filename = "%s.%s".format(UUID.randomUUID().toString, fileExtension(filePart.contentType))
 
             // Upload to S3
-            upload(S3_PHOTOS, byteArray, filename, filePart.contentType.get)
+            //upload(S3_PHOTOS, byteArray, filename, filePart.contentType.get)
 
             // Save Photo info on Parse
             val exif = exifData(filePart.ref.file)
@@ -118,7 +118,10 @@ object Admin extends BaseController
               nonEmptyDouble(exif.get("altitude")),
               Option(exif.getOrElse("width", 0).asInstanceOf[Int]),
               Option(exif.getOrElse("height", 0).asInstanceOf[Int]),
-              uploadForm._4))
+              uploadForm._4,
+              exif.get("timestamp").get.asInstanceOf[Date],
+              getTags
+            ))
           }
           case None => {
             if(Logger.isDebugEnabled) {
@@ -129,6 +132,10 @@ object Admin extends BaseController
         Redirect(routes.Admin.upload())
       }
     )
+  }
+
+  private def getTags: Option[Seq[String]] = {
+    Option(Seq("snow", "blizzard"))
   }
 
   private def nonEmptyDouble(value: Option[Any]): Option[Double] = value match {
@@ -149,6 +156,9 @@ object Admin extends BaseController
     val req = parseApiConnect(CLASS_PHOTO)
       .withHeaders(PARSE_API_HEADER_CONTENT_TYPE -> CONTENT_TYPE_JSON)
 
+    println("Parse Post: {%s}".format(photo.parseApiRequest))
+
+    /*
     val res =  Await.result(req.post("{%s}".format(photo.parseApiRequest)), WS_TIMEOUT seconds)
     println("### result: " + res.status + " | " +res.json)
     if (res.status == 201) {
@@ -159,7 +169,7 @@ object Admin extends BaseController
       }
       return Option(objectId)
     }
-
+    */
     None
   }
 
@@ -167,15 +177,18 @@ object Admin extends BaseController
     var exifData = Map[String, Any]()
     val metadata: Metadata = ImageMetadataReader.readMetadata(imageFile)
 
-    val subIfd = metadata.getDirectory(classOf[ExifSubIFDDirectory])
+    val ifd = metadata.getDirectory(classOf[ExifIFD0Directory])
+    if (ifd != null) {
+      exifData += ("timestamp" -> ifd.getDate(ExifIFD0Directory.TAG_DATETIME))
+    }
 
+    val subIfd = metadata.getDirectory(classOf[ExifSubIFDDirectory])
     if (subIfd != null) {
       exifData += ("width" -> subIfd.getInt(ExifSubIFDDirectory.TAG_EXIF_IMAGE_WIDTH))
       exifData += ("height" -> subIfd.getInt(ExifSubIFDDirectory.TAG_EXIF_IMAGE_HEIGHT))
     }
 
     val geo = metadata.getDirectory(classOf[GpsDirectory])
-
     if (geo != null) {
       val geoLocation: GeoLocation = geo.getGeoLocation()
       if (geoLocation != null) {
