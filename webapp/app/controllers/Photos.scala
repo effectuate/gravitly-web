@@ -96,13 +96,14 @@ object Photos extends BaseController with ParseApiConnectivity {
 
   def photosByTag(tag: String) = Action {
     val reqParams = new StringBuilder(512)
-    reqParams.append(""""hashTags":{"$all":["#%s"]} """.format(tag))
+    reqParams.append(""""hashTags":{"$all":["%s"]} """.format(tag))
 
     val query = parseApiConnect(CLASS_PHOTO)
       .withQueryString("where" -> "{%s}".format(reqParams.toString))
       .withQueryString("order" -> "-createdAt")
       .withQueryString("include" -> "user,location,category")
 
+    println("# reqParams: " + reqParams)
     Async {
       query.get.map {res =>
         val resultJson = res.json
