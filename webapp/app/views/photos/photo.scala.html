@@ -34,7 +34,9 @@
       </div>
             
       <div class="post-description">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis, fugit, quasi placeat impedit vitae cumque officia et perfe. <a class="hashtag"  href="#">#dolor </a><a class="hashtag" href="#"> #sit</a><a class="hashtag" href="#"> #amet </a><a class="hashtag" href="#">#consectetur</a><a class="hashtag" href="#"> #adipisicing </a><a class="hashtag" href="#">#obis</a><a class="hashtag"  href="#"> #quasi</a>
+          @photo.get.hashTags.get.map { tag =>
+          <a class="hashtag"  href="@routes.Photos.photosByTag(tag)">#@tag </a>
+          }
       </div>
 
    </div>

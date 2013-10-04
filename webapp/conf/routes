@@ -14,6 +14,7 @@ POST    /authenticate               controllers.Application.authenticate
 GET     /sitemap.xml                controllers.Photos.siteMap
 GET     /photos/:id                 controllers.Photos.index(id: String)
 GET     /u/:id                      controllers.Photos.photosByUser(id: String)
+GET     /h/:tag                     controllers.Photos.photosByTag(tag: String)
 
 #GET     /photos/grid_view/:id       controllers.Photos.getMockPhotoGalleryGridView(id : String)
 #GET     /photos/scroll_view/:id     controllers.Photos.getMockPhotoGalleryScrollView(id : String)

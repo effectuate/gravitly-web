@@ -2,6 +2,7 @@
     ly.gravit.web.Location, ly.gravit.web.Category]])(implicit imagePath: String)
 
 @main("Gravitly Photo") {
+@if(photos.size > 0) {
 <!--start profile-->
 <div class="profile">
     <div class="grid_12">
@@ -59,7 +60,9 @@
         </div>
     </div>
 </div>
+
 @for((k,v) <- photos) {
+        <h3>@photos.size</h3>
 <!-- start content -->
 <div class="content-container">
     <div class="content">
@@ -99,7 +102,13 @@
             <a href="/photos/@k"><img src="@imagePath/@v._1.filename" alt="@v._1.caption" width="612" height="612"></a>
         </div>
         <div class="post-description">
-            @v._1.caption <a class="hashtag"  href="#">#dolor </a><a class="hashtag" href="#"> #sit</a><a class="hashtag" href="#"> #amet </a><a class="hashtag" href="#">#consectetur</a><a class="hashtag" href="#"> #adipisicing </a><a class="hashtag" href="#">#obis</a><a class="hashtag"  href="#"> #quasi</a>
+            @v._1.caption
+
+            @v._1.hashTags.map { ht =>
+              @ht.map { tag =>
+              <a class="hashtag"  href="@routes.Photos.photosByTag(tag)">#@tag </a>
+              }
+            }
         </div>
         <div class="post-details">
             <div class="details">
@@ -130,4 +139,10 @@
     </div>
 </div>
   }
+} else {
+    <div>
+    <h2>No Photos to Show</h2>
+    </div>
+}
+
 }

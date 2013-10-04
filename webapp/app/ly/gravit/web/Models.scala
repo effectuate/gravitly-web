@@ -1,14 +1,14 @@
 package ly.gravit.web
 
 import java.util.Date
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{JsArray, JsObject, JsValue}
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
 case class Photo(id: Option[String], caption: String, filename: String, userId: String, locationId: String,
     categoryId: String, dateCreated: Option[Date], latitude: Option[Double], latitudeRef: Option[String],
     longitude: Option[Double], longitudeRef: Option[String], altitude: Option[Double], width: Option[Int],
-    height: Option[Int], isPrivate: Boolean, timestamp: Date, hashTags: Option[Seq[String]]) {
+    height: Option[Int], isPrivate: Option[Boolean], timestamp: Option[Date], hashTags: Option[List[String]]) {
 
   def parseApiRequest = {
     val reqParams = new StringBuilder(512)
@@ -73,12 +73,9 @@ object Photo {
     (json \ "altitude").asOpt[Double],
     (json \ "width").asOpt[Int],
     (json \ "height").asOpt[Int],
-    (json \ "isPrivate").as[Boolean],
-    (json \ "timestamp" \ "iso").as[Date],
-    (json \ "hashTags").asOpt[List[JsObject]] match {
-      case Some(hashTags) => Option(hashTags.map(_.toString))
-      case _ => None
-    }
+    (json \ "isPrivate").asOpt[Boolean],
+    (json \ "timestamp" \ "iso").asOpt[Date],
+    (json \ "hashTags").asOpt[List[String]].map(_.map(_.toString))
   )
 }
 

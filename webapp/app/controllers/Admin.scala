@@ -118,8 +118,8 @@ object Admin extends BaseController
               nonEmptyDouble(exif.get("altitude")),
               Option(exif.getOrElse("width", 0).asInstanceOf[Int]),
               Option(exif.getOrElse("height", 0).asInstanceOf[Int]),
-              uploadForm._4,
-              exif.get("timestamp").get.asInstanceOf[Date],
+              Option(uploadForm._4),
+              Option(exif.get("timestamp").get.asInstanceOf[Date]),
               getTags
             ))
           }
@@ -134,8 +134,8 @@ object Admin extends BaseController
     )
   }
 
-  private def getTags: Option[Seq[String]] = {
-    Option(Seq("snow", "blizzard"))
+  private def getTags: Option[List[String]] = {
+    Option(List("snow", "blizzard"))
   }
 
   private def nonEmptyDouble(value: Option[Any]): Option[Double] = value match {
