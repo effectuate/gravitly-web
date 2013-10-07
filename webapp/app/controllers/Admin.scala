@@ -68,14 +68,6 @@ object Admin extends BaseController
       "isPrivate" -> boolean
     )
   )
-  
-  def pugslife = Action { implicit request =>
-    val ee =request.body.asFormUrlEncoded.get("message")
-    println(ee)
-    Status(200)
-    
-    
-  }
 
   //def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
   def postUpload = Action { implicit request =>
@@ -217,33 +209,36 @@ object Admin extends BaseController
     "uoabsxZmSB" -> "Wind"
   )
 
-  def meta(category: String) = Action {
+  def meta(category: String, gPlaceRef: String, ll: String) = Action {
     categoryMap(category) match {
       case "Surf" => {
         Async {
           for {
-            gp <- getGooglePlace(pillarPoint)
-            wwo <- getWwoMarine
+            gp <- getGooglePlace(gPlaceRef)
+            wwo <- getWwo(ll)
+            wwoMarine <- getWwoMarine(ll)
           } yield {
             val meta = Json.obj(
               "name" -> gp("name").as[String],
               "utc_offset" -> gp("utc_offset").as[Int],
               "country" -> gp("country").as[String],
               "locality" -> gp("locality").as[String],
-              "cloudcover" -> wwo("cloudcover").as[String],
-              "humidity" -> wwo("humidity").as[String],
-              "precipMM" -> wwo("precipMM").as[String],
-              "pressure" -> wwo("pressure").as[String],
-              "sigHeight_m" -> wwo("sigHeight_m").as[String],
-              "swellDir" -> wwo("swellDir").as[String],
-              "swellHeight_m" -> wwo("swellHeight_m").as[String],
-              "swellPeriod_secs" -> wwo("swellPeriod_secs").as[String],
-              "visibility" -> wwo("visibility").as[String],
-              "weatherCode" -> wwo("weatherCode").as[String],
-              "winddir16Point" -> wwo("winddir16Point").as[String],
-              "winddirDegree" -> wwo("winddirDegree").as[String],
-              "windspeedKmph" -> wwo("windspeedKmph").as[String],
-              "windspeedMiles" -> wwo("windspeedMiles").as[String]
+              "temp_C" -> wwo("temp_C").as[String],
+              "temp_F" -> wwo("temp_F").as[String],
+              "cloudcover" -> wwoMarine("cloudcover").as[String],
+              "humidity" -> wwoMarine("humidity").as[String],
+              "precipMM" -> wwoMarine("precipMM").as[String],
+              "pressure" -> wwoMarine("pressure").as[String],
+              "sigHeight_m" -> wwoMarine("sigHeight_m").as[String],
+              "swellDir" -> wwoMarine("swellDir").as[String],
+              "swellHeight_m" -> wwoMarine("swellHeight_m").as[String],
+              "swellPeriod_secs" -> wwoMarine("swellPeriod_secs").as[String],
+              "visibility" -> wwoMarine("visibility").as[String],
+              "weatherCode" -> wwoMarine("weatherCode").as[String],
+              "winddir16Point" -> wwoMarine("winddir16Point").as[String],
+              "winddirDegree" -> wwoMarine("winddirDegree").as[String],
+              "windspeedKmph" -> wwoMarine("windspeedKmph").as[String],
+              "windspeedMiles" -> wwoMarine("windspeedMiles").as[String]
             )
             Ok(Json.obj(categoryMap(category) -> meta))
           }
@@ -252,8 +247,8 @@ object Admin extends BaseController
       case "General Weather" | "Trail" | "Wind" => {
         Async {
           for {
-            gp <- getGooglePlace(sierraAtTahoe)
-            wwo <- getWwo
+            gp <- getGooglePlace(gPlaceRef)
+            wwo <- getWwo(ll)
           } yield {
             val meta = Json.obj(
               "name" -> gp("name").as[String],
@@ -279,10 +274,18 @@ object Admin extends BaseController
       case "Snow" =>{
         Async{
           for {
-            sc <- getSnowCountry(portillo)
+            gp <- getGooglePlace(gPlaceRef)
+            //sc <- getSnowCountry(portillo)
+            wwo <- getWwo(ll)
           } yield {
             val meta = Json.obj(
-            "resortName" -> sc("resortName").as[String]
+              //"resortName" -> sc("resortName").as[String],
+              "name" -> gp("name").as[String],
+              "utc_offset" -> gp("utc_offset").as[Int],
+              "country" -> gp("country").as[String],
+              "locality" -> gp("locality").as[String],
+              "temp_C" -> wwo("temp_C").as[String],
+              "temp_F" -> wwo("temp_F").as[String]
             )
             Ok(Json.obj(categoryMap(category) -> meta))
           }
@@ -291,14 +294,19 @@ object Admin extends BaseController
       case "Flight" => Ok
       case "River" => Ok
       case "All/Custom" => Ok
-      case _ => BadRequest("Unsupported category.")
+      case _ => BadRequest("Unsupported Category.")
     }
   }
+
+  lazy private val snowCountryUrl = Play.application.configuration.getString("meta.api.snowCountry.url").get
+  lazy private val snowCountryKey = Play.application.configuration.getString("meta.api.snowCountry.key").get
+  /*
+    http://localhost:19001/meta/w75f8pnvDJ/38.999976,-120.080566
+   */
   private def getSnowCountry(id : String) : Future[Map[String, JsValue]] = {
     Future {
-      val snowUrl = Play.application.configuration.getString("meta.api.snowCountry.url").get
-      val snowKey = Play.application.configuration.getString("meta.api.snowCountry.key").get
-      val url =  "%s?apiKey=%s&ids=%s&output=json".format(snowUrl,snowKey,id)
+
+      val url =  "%s?apiKey=%s&ids=%s&output=json".format(snowCountryUrl, snowCountryKey, id)
 
       if (Logger.isDebugEnabled) {
         Logger.debug("3rdParty: "  +url)
@@ -307,20 +315,23 @@ object Admin extends BaseController
       val req = WS.url(url).get
       val res = Await.result(req, 20 seconds)
       val json = res.json
+      println("sno json: " + json)
 
       (json \ "items").as[List[JsObject]].map { i =>
         map += ("resortName" -> (i \ "resortName"))
       }
-      println("map    " +map)
+
       map
     }
   }
-  private def getWwo: Future[Map[String, JsValue]] = {
+
+  lazy private val wwoUrl = Play.application.configuration.getString("meta.api.wwo.url").get
+  lazy private val wwoKey = Play.application.configuration.getString("meta.api.wwo.key").get
+
+  private def getWwo(ll: String): Future[Map[String, JsValue]] = {
     Future {
-      val wwoUrl = Play.application.configuration.getString("meta.api.wwo.url").get
-      val wwoKey = Play.application.configuration.getString("meta.api.wwo.key").get
       val wwoDs = Play.application.configuration.getString("meta.api.wwo.dataset").get.split(",")
-      val url = "%s%s?%s&format=json&key=%s".format(wwoUrl, "/weather.ashx", "q=45%2C-2", wwoKey)
+      val url = "%s%s?q=%s&format=json&key=%s".format(wwoUrl, "/weather.ashx", ll, wwoKey)
 
       if (Logger.isDebugEnabled) {
         Logger.debug("3rdParty: "  +url)
@@ -331,7 +342,7 @@ object Admin extends BaseController
       val res = Await.result(req, 20 seconds)
 
       val json = res.json
-      println("weather json: " + json)
+      //println("weather json: " + json)
       val weatherJson = (json \ "data" \ "current_condition").as[List[JsObject]].head
 
       wwoDs.map{ key =>
@@ -346,12 +357,10 @@ object Admin extends BaseController
     }
   }
 
-  private def getWwoMarine: Future[Map[String, JsValue]] = {
+  private def getWwoMarine(ll: String): Future[Map[String, JsValue]] = {
     Future {
-      val wwoUrl = Play.application.configuration.getString("meta.api.wwo.url").get
-      val wwoKey = Play.application.configuration.getString("meta.api.wwo.key").get
       val wwoDs = Play.application.configuration.getString("meta.api.wwo.marine.dataset").get.split(",")
-      val url = "%s%s?%s&format=json&key=%s".format(wwoUrl, "/marine.ashx", "q=45%2C-2", wwoKey)
+      val url = "%s%s?q=%s&format=json&key=%s".format(wwoUrl, "/marine.ashx", ll, wwoKey)
 
       if (Logger.isDebugEnabled) {
         Logger.debug("3rdParty: "  +url)

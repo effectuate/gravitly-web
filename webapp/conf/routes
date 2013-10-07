@@ -24,4 +24,4 @@ GET     /admin/upload               controllers.Admin.upload
 #POST    /admin/upload               controllers.Admin.submitUpload
 POST    /admin/upload               controllers.Admin.postUpload
 
-GET     /meta/:category   controllers.Admin.meta(category: String)
+GET     /meta/:category/:gPlacesRef/:ll     controllers.Admin.meta(category: String, gPlacesRef: String, ll: String)
