@@ -103,7 +103,6 @@ object Photos extends BaseController with ParseApiConnectivity {
       .withQueryString("order" -> "-createdAt")
       .withQueryString("include" -> "user,location,category")
 
-    println("# reqParams: " + reqParams)
     Async {
       query.get.map {res =>
         val resultJson = res.json
