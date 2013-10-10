@@ -1,6 +1,5 @@
-@(form: Form[(String, String, String, Boolean)],
-location : List[ly.gravit.web.Location],
-category : List[ly.gravit.web.Category])
+@(form: Form[(String, String, String, Boolean, List[String])], location : List[ly.gravit.web.Location],
+    category: List[ly.gravit.web.Category])
 
 @main("Photo Upload") {
 
@@ -23,6 +22,9 @@ category : List[ly.gravit.web.Category])
         <option value="@cat.id">@cat.name</option>
         }
     </select>
+    <p>
+        Hash Tags: <input type="text" name="hashTags[0]" id="hashTags1" /> <input type="text" name="hashTags[1]" id="hashTags2" />
+    </p>
     <br>
     <input type="file" name="image" id="file">
     <br>

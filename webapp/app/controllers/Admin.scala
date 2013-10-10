@@ -27,6 +27,7 @@ import ly.gravit.web.Photo
 import play.api.libs.json.JsObject
 import com.drew.metadata.exif.{ExifIFD0Directory, GpsDirectory, ExifSubIFDDirectory}
 import com.drew.lang.GeoLocation
+import play.api.libs.ws.WS.WSRequestHolder
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,7 +66,8 @@ object Admin extends BaseController
       "caption" -> nonEmptyText,
       "location" -> nonEmptyText,
       "category" -> nonEmptyText,
-      "isPrivate" -> boolean
+      "isPrivate" -> boolean,
+      "hashTags" -> list(nonEmptyText)
     )
   )
 
@@ -112,7 +114,7 @@ object Admin extends BaseController
               Option(exif.getOrElse("height", 0).asInstanceOf[Int]),
               Option(uploadForm._4),
               Option(exif.get("timestamp").get.asInstanceOf[Date]),
-              getTags
+              Option(uploadForm._5)
             ))
           }
           case None => {
@@ -124,10 +126,6 @@ object Admin extends BaseController
         Redirect(routes.Admin.upload())
       }
     )
-  }
-
-  private def getTags: Option[List[String]] = {
-    Option(List("snow", "blizzard"))
   }
 
   private def nonEmptyDouble(value: Option[Any]): Option[Double] = value match {
@@ -150,7 +148,6 @@ object Admin extends BaseController
 
     println("Parse Post: {%s}".format(photo.parseApiRequest))
 
-    /*
     val res =  Await.result(req.post("{%s}".format(photo.parseApiRequest)), WS_TIMEOUT seconds)
     println("### result: " + res.status + " | " +res.json)
     if (res.status == 201) {
@@ -161,7 +158,7 @@ object Admin extends BaseController
       }
       return Option(objectId)
     }
-    */
+
     None
   }
 
@@ -170,7 +167,8 @@ object Admin extends BaseController
     val metadata: Metadata = ImageMetadataReader.readMetadata(imageFile)
 
     val ifd = metadata.getDirectory(classOf[ExifIFD0Directory])
-    if (ifd != null) {
+    if (ifd != null && ifd.getDate(ExifIFD0Directory.TAG_DATETIME) != null) {
+      println("#### Timestamp: " + ifd.getDate(ExifIFD0Directory.TAG_DATETIME))
       exifData += ("timestamp" -> ifd.getDate(ExifIFD0Directory.TAG_DATETIME))
     }
 

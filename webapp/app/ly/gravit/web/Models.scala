@@ -13,18 +13,22 @@ case class Photo(id: Option[String], caption: String, filename: String, userId: 
   def parseApiRequest = {
     val reqParams = new StringBuilder(512)
 
-    reqParams.append(""""isPrivate":%s,""".format(this.isPrivate))
+    this.isPrivate.map { priv=>
+      reqParams.append(""""isPrivate":%s,""".format(priv))
+    }
     reqParams.append(""""caption":"%s",""".format(this.caption))
     reqParams.append(""""filename":"%s",""".format(this.filename))
     reqParams.append(""""width":%s,""".format(this.width.getOrElse(0)))
     reqParams.append(""""height":%s,""".format(this.height.getOrElse(0)))
 
-    val dt = new DateTime(this.timestamp)
-    val fmt = ISODateTimeFormat.dateTime
-    reqParams.append(""""timestamp":{"__type": "Date", "iso":"%s"},""".format(fmt.print(dt)))
+    this.timestamp.map { ts =>
+      val dt = new DateTime(ts)
+      val fmt = ISODateTimeFormat.dateTime
+      reqParams.append(""""timestamp":{"__type": "Date", "iso":"%s"},""".format(fmt.print(dt)))
+    }
 
     (this.latitude, this.latitudeRef, this.longitude, this.longitudeRef) match {
-      case (Some(lat), Some(latRef), Some(long), Some(longRef))=> {
+      case (Some(lat), Some(latRef), Some(long), Some(longRef)) => {
         reqParams.append(""""latitude":%s,""".format(lat))
         reqParams.append(""""latitudeRef":"%s",""".format(latRef))
         reqParams.append(""""longitude":%s,""".format(long))
@@ -47,7 +51,7 @@ case class Photo(id: Option[String], caption: String, filename: String, userId: 
 
         sb.append("\"%s\"".format(tag))
       }
-      reqParams.append("""{"hashTags":{"__op":"AddUnique","objects":[%s]}},""".format(sb.toString))
+      reqParams.append(""""hashTags":{"__op":"AddUnique","objects":[%s]},""".format(sb.toString))
     }
 
     reqParams.append(""""user":{"__type":"Pointer","className":"_User","objectId":"%s"},""".format(this.userId))
