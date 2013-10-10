@@ -194,9 +194,9 @@ object Admin extends BaseController
     exifData
   }
 
-  val sierraAtTahoe = "CoQBdAAAANahspttjHfS875axpTChB9K17fFVW3beJ6l_4kTulu_eRbwAH1GzyGYL8KetHXcW-v1w66rLY3sUgd5Jpp0HrGTXoO7b7ad2zJCac8WjVJOAnUI9vuaZcaMu1fwyiGOfqzdnWL0kAb7A2rl0g7IZhShJfjSnyuy7q3FNoa3DWGvEhAzU1Ysyhf0HL_TD6Bd-PEJGhTjedH1ZjfDrBAOM4FI_sRw2xBGDg"
-  val pillarPoint = "CoQBcgAAAKzJpbZ_I_TTCg1ZybQQL-nZDzGhMLDEAq6WlGYKC_cwcAyH046g9zsmJJP2hdUnaHnYCJmAicX8jaJcGFwjda_fI2m8cWNbQXfuT6GFNW4-eVNL2tf6Ai95EhXszyI6rpKvsS_LyjeEqODAF_d458XN_0Ccu8fgvzPodl9e351eEhCK6Ig6sxyq4tMFdE8q62vaGhSsEnVc23t82zzg_dQPTiKy2Rzbfw"
-  val portillo = "411008"
+  //val sierraAtTahoe = "CoQBdAAAANahspttjHfS875axpTChB9K17fFVW3beJ6l_4kTulu_eRbwAH1GzyGYL8KetHXcW-v1w66rLY3sUgd5Jpp0HrGTXoO7b7ad2zJCac8WjVJOAnUI9vuaZcaMu1fwyiGOfqzdnWL0kAb7A2rl0g7IZhShJfjSnyuy7q3FNoa3DWGvEhAzU1Ysyhf0HL_TD6Bd-PEJGhTjedH1ZjfDrBAOM4FI_sRw2xBGDg"
+  //val pillarPoint = "CoQBcgAAAKzJpbZ_I_TTCg1ZybQQL-nZDzGhMLDEAq6WlGYKC_cwcAyH046g9zsmJJP2hdUnaHnYCJmAicX8jaJcGFwjda_fI2m8cWNbQXfuT6GFNW4-eVNL2tf6Ai95EhXszyI6rpKvsS_LyjeEqODAF_d458XN_0Ccu8fgvzPodl9e351eEhCK6Ig6sxyq4tMFdE8q62vaGhSsEnVc23t82zzg_dQPTiKy2Rzbfw"
+  //val portillo = "411008"
 
   val categoryMap = Map(
     "PVVqIA0NRI" -> "All/Custom",
@@ -255,6 +255,8 @@ object Admin extends BaseController
               "utc_offset" -> gp("utc_offset").as[Int],
               "country" -> gp("country").as[String],
               "locality" -> gp("locality").as[String],
+              "temp_C" -> wwo("temp_C").as[String],
+              "temp_F" -> wwo("temp_F").as[String],
               "cloudcover" -> wwo("cloudcover").as[String],
               "humidity" -> wwo("humidity").as[String],
               "precipMM" -> wwo("precipMM").as[String],
@@ -265,13 +267,15 @@ object Admin extends BaseController
               "winddir16Point" -> wwo("winddir16Point").as[String],
               "winddirDegree" -> wwo("winddirDegree").as[String],
               "windspeedKmph" -> wwo("windspeedKmph").as[String],
+              //"windspeedMeterSec" -> wwo("windspeedMeterSec").as[String],
+              //"windspeedKnots" -> wwo("windspeedKnots").as[String],
               "windspeedMiles" -> wwo("windspeedMiles").as[String]
             )
             Ok(Json.obj(categoryMap(category) -> meta))
           }
         }
       }
-      case "Snow" =>{
+      case "Snow" => {
         Async{
           for {
             gp <- getGooglePlace(gPlaceRef)
@@ -290,9 +294,27 @@ object Admin extends BaseController
             Ok(Json.obj(categoryMap(category) -> meta))
           }
         }
-        }
+      }
       case "Flight" => Ok
-      case "River" => Ok
+      case "River" => {
+        Async{
+          for {
+            gp <- getGooglePlace(gPlaceRef)
+            wwo <- getWwo(ll)
+          } yield {
+            val meta = Json.obj(
+              //"resortName" -> sc("resortName").as[String],
+              "name" -> gp("name").as[String],
+              "utc_offset" -> gp("utc_offset").as[Int],
+              "country" -> gp("country").as[String],
+              "locality" -> gp("locality").as[String],
+              "temp_C" -> wwo("temp_C").as[String],
+              "temp_F" -> wwo("temp_F").as[String]
+            )
+            Ok(Json.obj(categoryMap(category) -> meta))
+          }
+        }
+      }
       case "All/Custom" => Ok
       case _ => BadRequest("Unsupported Category.")
     }
@@ -375,7 +397,7 @@ object Admin extends BaseController
       val hourly = (weatherJson \ "hourly").as[List[JsObject]].head
 
       wwoDs.map{ key =>
-        println("map key : " + key)
+        //println("map key : " + key)
         map += (key -> (hourly \ key))
       }
 
