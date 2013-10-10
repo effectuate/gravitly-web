@@ -113,7 +113,10 @@ object Admin extends BaseController
               Option(exif.getOrElse("width", 0).asInstanceOf[Int]),
               Option(exif.getOrElse("height", 0).asInstanceOf[Int]),
               Option(uploadForm._4),
-              Option(exif.get("timestamp").get.asInstanceOf[Date]),
+              exif.get("timestamp") match {
+                case Some(ts) => Option(exif.get("timestamp").get.asInstanceOf[Date])
+                case None => None
+              },
               Option(uploadForm._5)
             ))
           }
@@ -168,7 +171,6 @@ object Admin extends BaseController
 
     val ifd = metadata.getDirectory(classOf[ExifIFD0Directory])
     if (ifd != null && ifd.getDate(ExifIFD0Directory.TAG_DATETIME) != null) {
-      println("#### Timestamp: " + ifd.getDate(ExifIFD0Directory.TAG_DATETIME))
       exifData += ("timestamp" -> ifd.getDate(ExifIFD0Directory.TAG_DATETIME))
     }
 
