@@ -100,7 +100,7 @@ object Admin extends BaseController
             val filename = "%s.%s".format(UUID.randomUUID().toString, fileExtension(filePart.contentType))
 
             // Upload to S3
-            //upload(S3_PHOTOS, byteArray, filename, filePart.contentType.get)
+            upload(S3_PHOTOS, byteArray, filename, filePart.contentType.get)
 
             // Save Photo info on Parse
             val exif = exifData(filePart.ref.file)
