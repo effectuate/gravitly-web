@@ -55,7 +55,6 @@ object Admin extends BaseController
                 cat =>
                 Ok(admin.upload(uploaderForm,loc.toList, cat.toList))
               }
-
         }
       }
     }
@@ -433,6 +432,95 @@ object Admin extends BaseController
       map += ("utc_offset" -> (results \ "utc_offset"))
 
       map
+    }
+  }
+
+  def environmentalData(category: String, ll: String) = Action {
+    categoryMap(category) match {
+      case "Surf" => {
+        Async {
+          for {
+            wwo <- getWwo(ll)
+            wwoMarine <- getWwoMarine(ll)
+          } yield {
+            val meta = Json.obj(
+              "temp_C" -> wwo("temp_C").as[String],
+              "temp_F" -> wwo("temp_F").as[String],
+              "cloudcover" -> wwoMarine("cloudcover").as[String],
+              "humidity" -> wwoMarine("humidity").as[String],
+              "precipMM" -> wwoMarine("precipMM").as[String],
+              "pressure" -> wwoMarine("pressure").as[String],
+              "sigHeight_m" -> wwoMarine("sigHeight_m").as[String],
+              "swellDir" -> wwoMarine("swellDir").as[String],
+              "swellHeight_m" -> wwoMarine("swellHeight_m").as[String],
+              "swellPeriod_secs" -> wwoMarine("swellPeriod_secs").as[String],
+              "visibility" -> wwoMarine("visibility").as[String],
+              "weatherCode" -> wwoMarine("weatherCode").as[String],
+              "winddir16Point" -> wwoMarine("winddir16Point").as[String],
+              "winddirDegree" -> wwoMarine("winddirDegree").as[String],
+              "windspeedKmph" -> wwoMarine("windspeedKmph").as[String],
+              "windspeedMiles" -> wwoMarine("windspeedMiles").as[String]
+            )
+            Ok(Json.obj(categoryMap(category) -> meta))
+          }
+        }
+      }
+      case "General Weather" | "Trail" | "Wind" => {
+        Async {
+          for {
+            wwo <- getWwo(ll)
+          } yield {
+            val meta = Json.obj(
+              "temp_C" -> wwo("temp_C").as[String],
+              "temp_F" -> wwo("temp_F").as[String],
+              "cloudcover" -> wwo("cloudcover").as[String],
+              "humidity" -> wwo("humidity").as[String],
+              "precipMM" -> wwo("precipMM").as[String],
+              "pressure" -> wwo("pressure").as[String],
+              "visibility" -> wwo("visibility").as[String],
+              "weatherCode" -> wwo("weatherCode").as[String],
+              "weatherDesc" -> wwo("weatherDesc").as[String],
+              "winddir16Point" -> wwo("winddir16Point").as[String],
+              "winddirDegree" -> wwo("winddirDegree").as[String],
+              "windspeedKmph" -> wwo("windspeedKmph").as[String],
+              //"windspeedMeterSec" -> wwo("windspeedMeterSec").as[String],
+              //"windspeedKnots" -> wwo("windspeedKnots").as[String],
+              "windspeedMiles" -> wwo("windspeedMiles").as[String]
+            )
+            Ok(Json.obj(categoryMap(category) -> meta))
+          }
+        }
+      }
+      case "Snow" => {
+        Async{
+          for {
+            //sc <- getSnowCountry(portillo)
+            wwo <- getWwo(ll)
+          } yield {
+            val meta = Json.obj(
+              "temp_C" -> wwo("temp_C").as[String],
+              "temp_F" -> wwo("temp_F").as[String]
+            )
+            Ok(Json.obj(categoryMap(category) -> meta))
+          }
+        }
+      }
+      case "Flight" => Ok
+      case "River" => {
+        Async{
+          for {
+            wwo <- getWwo(ll)
+          } yield {
+            val meta = Json.obj(
+              "temp_C" -> wwo("temp_C").as[String],
+              "temp_F" -> wwo("temp_F").as[String]
+            )
+            Ok(Json.obj(categoryMap(category) -> meta))
+          }
+        }
+      }
+      case "All/Custom" => Ok
+      case _ => BadRequest("Unsupported Category.")
     }
   }
 }
