@@ -260,14 +260,18 @@ object Admin extends BaseController
               "humidity" -> wwo("humidity").as[String],
               "precipMM" -> wwo("precipMM").as[String],
               "pressure" -> wwo("pressure").as[String],
+              "pressureMiles" -> wwo("pressureMiles").as[String],
               "visibility" -> wwo("visibility").as[String],
+              "visibilityMiles" -> wwo("visibilityMiles").as[String],
               "weatherCode" -> wwo("weatherCode").as[String],
               "weatherDesc" -> wwo("weatherDesc").as[String],
               "winddir16Point" -> wwo("winddir16Point").as[String],
               "winddirDegree" -> wwo("winddirDegree").as[String],
               "windspeedKmph" -> wwo("windspeedKmph").as[String],
-              //"windspeedMeterSec" -> wwo("windspeedMeterSec").as[String],
-              //"windspeedKnots" -> wwo("windspeedKnots").as[String],
+              "windspeedMeterSec" -> wwo("windspeedMeterSec").as[String],
+              "windspeedKnots" -> wwo("windspeedKnots").as[String],
+              "precipMM" -> wwo("precipMM").as[String],
+              "precipInches" -> wwo("precipInches").as[String],
               "windspeedMiles" -> wwo("windspeedMiles").as[String]
             )
             Ok(Json.obj(categoryMap(category) -> meta))
