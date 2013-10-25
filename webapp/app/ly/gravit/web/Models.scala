@@ -8,7 +8,8 @@ import org.joda.time.format.ISODateTimeFormat
 case class Photo(id: Option[String], caption: String, filename: String, userId: String, locationId: String,
     categoryId: String, dateCreated: Option[Date], latitude: Option[Double], latitudeRef: Option[String],
     longitude: Option[Double], longitudeRef: Option[String], altitude: Option[Double], width: Option[Int],
-    height: Option[Int], isPrivate: Option[Boolean], timestamp: Option[Date], hashTags: Option[List[String]]) {
+    height: Option[Int], isPrivate: Option[Boolean], timestamp: Option[Date], hashTags: Option[List[String]],
+    locationName: Option[String]) {
 
   def parseApiRequest = {
     val reqParams = new StringBuilder(512)
@@ -79,7 +80,8 @@ object Photo {
     (json \ "height").asOpt[Int],
     (json \ "isPrivate").asOpt[Boolean],
     (json \ "timestamp" \ "iso").asOpt[Date],
-    (json \ "hashTags").asOpt[List[String]].map(_.map(_.toString))
+    (json \ "hashTags").asOpt[List[String]].map(_.map(_.toString)),
+    (json \ "location" \ "name").asOpt[String]
   )
 }
 

@@ -66,7 +66,8 @@ object Admin extends BaseController
       "location" -> nonEmptyText,
       "category" -> nonEmptyText,
       "isPrivate" -> boolean,
-      "hashTags" -> list(nonEmptyText)
+      "hashTags" -> list(nonEmptyText),
+      "locationName" -> optional(text)
     )
   )
 
@@ -116,7 +117,8 @@ object Admin extends BaseController
                 case Some(ts) => Option(exif.get("timestamp").get.asInstanceOf[Date])
                 case None => None
               },
-              Option(uploadForm._5)
+              Option(uploadForm._5),
+              uploadForm._6
             ))
           }
           case None => {
