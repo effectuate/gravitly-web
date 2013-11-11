@@ -22,6 +22,10 @@ case class Photo(id: Option[String], caption: String, filename: String, userId: 
     reqParams.append(""""width":%s,""".format(this.width.getOrElse(0)))
     reqParams.append(""""height":%s,""".format(this.height.getOrElse(0)))
 
+    this.locationName.map { loc =>
+      reqParams.append(""""locationName":"%s",""".format(loc))
+    }
+
     this.timestamp.map { ts =>
       val dt = new DateTime(ts)
       val fmt = ISODateTimeFormat.dateTime
@@ -81,7 +85,7 @@ object Photo {
     (json \ "isPrivate").asOpt[Boolean],
     (json \ "timestamp" \ "iso").asOpt[Date],
     (json \ "hashTags").asOpt[List[String]].map(_.map(_.toString)),
-    (json \ "location" \ "name").asOpt[String]
+    (json \ "locationName").asOpt[String]
   )
 }
 
