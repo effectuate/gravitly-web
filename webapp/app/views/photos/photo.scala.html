@@ -20,10 +20,19 @@
             <a href="/u/@user.get.id" class="link">@user.get.name</a>
           </h1>
 
-          <div class="icon-blue-location"></div>
-          <div class="owner-location">
-            <a href="/photos/location/@location.get.id" class="link">@location.get.name</a>
-          </div>
+          @photo.get.locationName.map { loc =>
+            <div class="icon-blue-location"></div>
+            <div class="owner-location">
+              @(photo.get.latitude, photo.get.longitude) match {
+                case (Some(lat), Some(long)) => {
+                <a href="@routes.Photos.photosByGeo(photo.get.latitude.get.toString,photo.get.longitude.get.toString)">@loc</a>
+                }
+                case _ => {
+                    @loc
+                }
+              }
+            </div>
+          }
           <div class="owner-category">
             Sport: <a href="/photos/category/@category.get.id" class="link">@category.get.name</a>
           </div>
@@ -38,6 +47,30 @@
           <a class="hashtag"  href="@routes.Photos.photosByTag(tag)">#@tag </a>
           }
       </div>
+
+        <div class="post-details">
+            <div class="details">
+                @(photo.get.latitude, photo.get.longitude) match {
+
+                case (Some(lat), Some(long)) => {
+                <div class="geolocation-container">
+                    <div class="icon-gray-compass"></div>
+                    <div class="post-geolocation">@lat @photo.get.latitudeRef, @long @photo.get.longitudeRef</div>
+                </div>
+                }
+
+                case _ => {}
+
+                }
+                <div class="timestamp-container">
+                    <div class="icon-gray-time"></div>
+                    <div class="post-timestamp">@photo.get.dateCreated.get.format("EEE MMM dd yyyy")</div>
+                </div>
+            </div>
+            <div class="share-post">
+                sius bonorum ne est, eam commune sapientem cu.
+            </div>
+        </div>
 
    </div>
 

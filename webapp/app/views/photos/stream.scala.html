@@ -78,12 +78,19 @@
                         <a href="/u/@v._2.id">@v._2.name</a>
                     </div>
 
-
-
+                    @v._1.locationName.map { loc =>
                     <div class="icon-blue-location"></div>
                     <div class="owner-location">
-                        <a href="/photos/location/@v._3.id">@v._3.name</a>
+                        @(v._1.latitude, v._1.longitude) match {
+                          case (Some(lat), Some(long)) => {
+                            <a href="@routes.Photos.photosByGeo(v._1.latitude.get.toString,v._1.longitude.get.toString)">@loc</a>
+                          }
+                          case _ => {
+                            @loc
+                          }
+                        }
                     </div>
+                    }
                 </div>
 
                 <div class="owner-badge-container">

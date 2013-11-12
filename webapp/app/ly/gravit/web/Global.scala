@@ -24,7 +24,6 @@ object Global extends GlobalSettings with ParseApiConnectivity {
     throw new IllegalStateException("Admin email is required"))
 
   override def onRouteRequest(req: RequestHeader): Option[Handler] = {
-    println("### Req: %s - %s".format(req.method, req.uri))
     implicit val request = req
 
     req.method match {
