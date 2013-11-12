@@ -79,14 +79,14 @@ object Admin extends BaseController
           Logger.debug("### Upload Errors: " + errors)
         }
         Async{
-        Details.getLocations.map{ loc =>
-          Async{
-            Details.getCategories.map{ cat =>
-              BadRequest(admin.upload(errors,loc.toList,cat.toList))
+          Details.getLocations.map{ loc =>
+            Async{
+              Details.getCategories.map{ cat =>
+                BadRequest(admin.upload(errors,loc.toList,cat.toList))
+              }
             }
           }
         }
-       }
       },
       uploadForm => {
         if(Logger.isDebugEnabled) {

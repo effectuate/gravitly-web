@@ -26,6 +26,10 @@ object Application extends Controller with LoginLogout with AuthConfigImpl {
     gotoLogoutSucceeded
   }
 
+  def invalidApiRequest = Action {
+    BadRequest("Invalid Authentication Tokens")
+  }
+
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors => {
