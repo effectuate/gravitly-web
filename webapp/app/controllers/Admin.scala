@@ -73,6 +73,7 @@ object Admin extends BaseController
 
   //def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
   def postUpload = Action { implicit request =>
+    println(":)")
     uploaderForm.bindFromRequest.fold(
       errors => {
         if(Logger.isDebugEnabled) {
@@ -92,7 +93,7 @@ object Admin extends BaseController
         if(Logger.isDebugEnabled) {
           Logger.debug("### UploadForm: " + uploadForm)
         }
-
+        println("##########"+ request.body.asMultipartFormData)
         request.body.asMultipartFormData match {
           case Some(multi) => {
             val filePart = multi.file("image").get

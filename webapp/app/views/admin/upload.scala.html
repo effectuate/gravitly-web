@@ -6,7 +6,7 @@
 <div class="photo-upload-container">
   <h1>Photo Upload</h1>
 
-  @helper.form(routes.Admin.postUpload, 'enctype -> "multipart/form-data" ) {
+  @helper.form(routes.Admin.postUpload, 'enctype -> "multipart/form-data" ,'class -> "upload-form") {
     <input type="text" name="caption" placeholder="Caption" size="30">
     <br>
     <select name="location">
@@ -32,9 +32,13 @@
     <p>
         @helper.checkbox(form("isPrivate"), '_label -> "Private?")
     </p>
-    <div class="upload-button">
+      <div class="upload-button">
     <button type="submit" class="btn-blue">Upload</button>
   	</div>
   }
+  
  </div>
+ 
+ 
+ <script src='@routes.Assets.at("javascripts/upload.js")' type='text/javascript'></script>
 }
