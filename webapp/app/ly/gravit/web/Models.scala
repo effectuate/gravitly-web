@@ -5,7 +5,7 @@ import play.api.libs.json.{JsArray, JsObject, JsValue}
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
-case class Photo(id: Option[String], caption: String, filename: String, userId: String, locationId: String,
+case class Photo(id: Option[String], caption: Option[String], filename: String, userId: String, locationId: String,
     categoryId: String, dateCreated: Option[Date], latitude: Option[Double], latitudeRef: Option[String],
     longitude: Option[Double], longitudeRef: Option[String], altitude: Option[Double], width: Option[Int],
     height: Option[Int], isPrivate: Option[Boolean], timestamp: Option[Date], hashTags: Option[List[String]],
@@ -17,7 +17,9 @@ case class Photo(id: Option[String], caption: String, filename: String, userId: 
     this.isPrivate.map { priv=>
       reqParams.append(""""isPrivate":%s,""".format(priv))
     }
-    reqParams.append(""""caption":"%s",""".format(this.caption))
+    this.caption.map { cap =>
+      reqParams.append(""""caption":"%s",""".format(cap))
+    }
     reqParams.append(""""filename":"%s",""".format(this.filename))
     reqParams.append(""""width":%s,""".format(this.width.getOrElse(0)))
     reqParams.append(""""height":%s,""".format(this.height.getOrElse(0)))
@@ -69,7 +71,7 @@ case class Photo(id: Option[String], caption: String, filename: String, userId: 
 object Photo {
   def fromJson(json: JsValue) = Photo(
     Option((json \ "objectId").as[String]),
-    (json \ "caption").as[String],
+    (json \ "caption").asOpt[String],
     (json \ "filename").as[String],
     (json \ "user" \ "objectId").as[String],
     (json \ "location" \ "objectId").as[String],

@@ -62,7 +62,7 @@ object Admin extends BaseController
 
   val uploaderForm = Form(
     tuple(
-      "caption" -> nonEmptyText,
+      "caption" -> optional(text),
       "location" -> nonEmptyText,
       "category" -> nonEmptyText,
       "isPrivate" -> boolean,
