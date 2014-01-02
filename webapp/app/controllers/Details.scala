@@ -16,10 +16,10 @@ import play.api.libs.json.JsObject
  * To change this template use File | Settings | File Templates.
  */
 object Details extends BaseController
-with AuthElement
-with AuthConfigImpl
-with S3Connectivity
-with ParseApiConnectivity{
+    with AuthElement
+    with AuthConfigImpl
+    with S3Connectivity
+    with ParseApiConnectivity{
 
   def getLocations = {
     val query = parseApiConnect(CLASS_LOCATION)

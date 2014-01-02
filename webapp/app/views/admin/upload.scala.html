@@ -1,4 +1,4 @@
-@(form: Form[(Option[String], String, String, Boolean, List[String], Option[String])], location : List[ly.gravit.web.Location],
+@(form: Form[(Option[String], String, String, Boolean, List[String], Option[String],Option[String])], location : List[ly.gravit.web.Location],
     category: List[ly.gravit.web.Category])
 
 @main("Photo Upload") {
@@ -8,6 +8,7 @@
 
   @helper.form(routes.Admin.postUpload, 'enctype -> "multipart/form-data" ,'class -> "upload-form") {
     <input type="text" name="caption" placeholder="Caption" size="30">
+    <input type="hidden" name="userKey" size="30">
     <br>
     <select name="location">
       <option value="-1">[ Select Location ]</option>

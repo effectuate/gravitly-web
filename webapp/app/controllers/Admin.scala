@@ -28,6 +28,7 @@ import play.api.libs.json.JsObject
 import com.drew.metadata.exif.{ExifIFD0Directory, GpsDirectory, ExifSubIFDDirectory}
 import com.drew.lang.GeoLocation
 import play.api.libs.ws.WS.WSRequestHolder
+import play.cache.Cache
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,11 +43,14 @@ object Admin extends BaseController
     with S3Connectivity
     with ParseApiConnectivity {
 
+  lazy val USER_ID = "userId"
+
   def index = StackAction(AuthorityKey -> Administrator) { implicit request =>
     Ok(admin.index(loggedIn))
   }
 
   def upload = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    Cache.set(USER_ID, loggedIn.id)
       Async{
         Details.getLocations.map{
           loc =>
@@ -67,12 +71,14 @@ object Admin extends BaseController
       "category" -> nonEmptyText,
       "isPrivate" -> boolean,
       "hashTags" -> list(nonEmptyText),
-      "locationName" -> optional(text)
+      "locationName" -> optional(text),
+      "userKey" -> optional(text)
     )
   )
 
-  //def postUpload = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-  def postUpload = Action { implicit request =>
+  //def postUpload = StackAction(AuthorityKey -> NormalUser, AuthorityKey -> Administrator) { implicit request =>
+  def postUpload= Action { implicit request =>
+    val userId = Cache.get(USER_ID).toString
     println(":)")
     uploaderForm.bindFromRequest.fold(
       errors => {
@@ -104,8 +110,12 @@ object Admin extends BaseController
             upload(S3_PHOTOS, byteArray, filename, filePart.contentType.get)
 
             // Save Photo info on Parse
+            //println("cache ----->  "+Cache.get(USER_ID).toString)
             val exif = exifData(filePart.ref.file)
-            create(Photo(null, uploadForm._1, filename, "LsmI34VlUu"/*loggedIn.id*/, uploadForm._2,uploadForm._3, None,
+            create(Photo(null, uploadForm._1, filename, uploadForm._7 match {
+              case Some(a) => a.toString
+              case None => userId
+            },/* loggedIn.id*/ uploadForm._2,uploadForm._3, None,
               nonEmptyDouble(exif.get("latitude")),
               Option(exif.getOrElse("latitudeRef", null).asInstanceOf[String]),
               nonEmptyDouble(exif.get("longitude")),
