@@ -78,7 +78,7 @@ object Admin extends BaseController
 
   //def postUpload = StackAction(AuthorityKey -> NormalUser, AuthorityKey -> Administrator) { implicit request =>
   def postUpload= Action { implicit request =>
-    val userId = Cache.get(USER_ID).toString
+    //val userId =
     println(":)")
     uploaderForm.bindFromRequest.fold(
       errors => {
@@ -114,7 +114,7 @@ object Admin extends BaseController
             val exif = exifData(filePart.ref.file)
             create(Photo(null, uploadForm._1, filename, uploadForm._7 match {
               case Some(a) => a.toString
-              case None => userId
+              case None => Cache.get(USER_ID).toString
             },/* loggedIn.id*/ uploadForm._2,uploadForm._3, None,
               nonEmptyDouble(exif.get("latitude")),
               Option(exif.getOrElse("latitudeRef", null).asInstanceOf[String]),
