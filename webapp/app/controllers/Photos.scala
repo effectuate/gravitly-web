@@ -61,11 +61,15 @@ object Photos extends BaseController with ParseApiConnectivity {
   def photosByUser(id: String) = Action {
     val reqParams = new StringBuilder(512)
     reqParams.append(""""user":{"__type":"Pointer","className":"_User","objectId":"%s"}""".format(id))
+    reqParams.append(""", "isFlagged":false """)
 
     val query = parseApiConnect(CLASS_PHOTO)
       .withQueryString("where" -> "{%s}".format(reqParams.toString))
+      //.withQueryString("where" -> """, {"isFlagged":%s}""".format(true))
       .withQueryString("order" -> "-createdAt")
       .withQueryString("include" -> "user,location,category")
+
+    println(">>>>>>>>>>> QUERY"+query);
 
     Async {
       query.get.map {res =>
@@ -100,6 +104,7 @@ object Photos extends BaseController with ParseApiConnectivity {
     val reqParams = new StringBuilder(512)
     reqParams.append(""""geoPoint": {"$nearSphere": {"__type": "GeoPoint", "latitude": %s, "longitude": %s}, "$maxDistanceInMiles": %s}"""
       .format(lat, long, RADIUS_MI))
+    reqParams.append(""", "isFlagged":false, "isPrivate":false """)
 
     val query = parseApiConnect(CLASS_PHOTO)
       .withQueryString("where" -> "{%s}".format(reqParams.toString))
@@ -133,6 +138,7 @@ object Photos extends BaseController with ParseApiConnectivity {
   def photosByTag(tag: String) = Action {
     val reqParams = new StringBuilder(512)
     reqParams.append(""""hashTags":{"$all":["%s"]} """.format(tag))
+    reqParams.append(""", "isFlagged":false, "isPrivate":false """)
 
     val query = parseApiConnect(CLASS_PHOTO)
       .withQueryString("where" -> "{%s}".format(reqParams.toString))
