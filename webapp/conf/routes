@@ -19,7 +19,9 @@ GET     /photos/:id                 controllers.Photos.index(id: String)
 GET     /u/:id                      controllers.Photos.photosByUser(id: String)
 GET     /h/:tag                     controllers.Photos.photosByTag(tag: String)
 GET     /g/:lat/:long               controllers.Photos.photosByGeo(lat: String, long: String)
+#GET     /c/:id                      controllers.Photos.photosByCategory(id: String)
 
+GET     /photos/category/:id        controllers.Photos.photosByCategory(id: String)
 #GET     /photos/grid_view/:id       controllers.Photos.getMockPhotoGalleryGridView(id : String)
 #GET     /photos/scroll_view/:id     controllers.Photos.getMockPhotoGalleryScrollView(id : String)
 

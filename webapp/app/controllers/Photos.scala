@@ -173,6 +173,42 @@ object Photos extends BaseController with ParseApiConnectivity {
     }
   }
 
+  def photosByCategory(catId: String) = Action {
+    val reqParams = new StringBuilder(512)
+    reqParams.append(""""category":{"__type":"Pointer","className":"Category","objectId":"%s"}""".format(catId))
+    reqParams.append(""", "isFlagged":false, "isPrivate":false """)
+
+    val query = parseApiConnect(CLASS_PHOTO)
+      .withQueryString("where" -> "{%s}".format(reqParams.toString))
+      .withQueryString("order" -> "-createdAt")
+      .withQueryString("include" -> "user,location,category")
+
+    Async {
+      query.get.map { res =>
+        val resultJson = res.json
+
+        val photoMap = new mutable.LinkedHashMap[String, Tuple4[Photo, Account, Location, Category]]()
+
+        (resultJson \ "results").as[List[JsObject]].map {json =>
+          val photo = Option(Photo.fromJson(json))
+
+          val account = Option(Account((json \ "user" \ "objectId").as[String],
+            null, null, (json \ "user" \ "username").as[String], null))
+
+          val location = Option(Location((json \ "location" \ "objectId").as[String],
+            (json \ "location" \ "name").as[String]))
+
+          val category = Option(Category((json \ "category" \ "objectId").as[String],
+            (json \ "category" \ "name").as[String]))
+
+          photoMap put (photo.get.id.get, (photo.get, account.get, location.get, category.get))
+        }
+
+        Ok(photos.stream(photoMap))
+      }
+    }
+  }
+
   def siteMap = Action {implicit request =>
     val query = parseApiConnect(CLASS_PHOTO)
       .withQueryString("order" -> "-createdAt")
