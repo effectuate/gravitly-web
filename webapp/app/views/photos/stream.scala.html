@@ -71,7 +71,14 @@
             <div class="owner">
                 <div class="owner-container">
                     <div class="owner-avatar">
-                        <img src=@routes.Assets.at("images/gravitly-mini.png")>
+                        <!--img src=@routes.Assets.at("images/gravitly-mini.png")-->
+
+
+                        @v._2.imageURL match {
+                            case null => { <img src=@routes.Assets.at("images/gravitly-mini.png")> }
+                            case _ => { <img src=@v._2.imageURL width="52px" height="52px"> }
+                        }
+
                     </div>
 
                     <div class="owner-name">

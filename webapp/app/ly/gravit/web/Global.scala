@@ -97,7 +97,7 @@ object Global extends GlobalSettings with ParseApiConnectivity {
     AccountDaoImpl.getByEmail(ADMIN_EMAIL) match {
       case Some(account) => /* noop */
       case None => {
-        val admin = new Account(null, ADMIN_EMAIL, "password", ADMIN_EMAIL, Administrator)
+        val admin = new Account(null, ADMIN_EMAIL, "password", ADMIN_EMAIL, Administrator, null)
         AccountDaoImpl.create(admin) match {
           case Some(id) => {
             if (Logger.isDebugEnabled) {

@@ -8,4 +8,4 @@ package ly.gravit.web.auth
  * To change this template use File | Settings | File Templates.
  */
 
-case class Account(id: String, email: String, password: String, name: String, permission: Permission)
+case class Account(id: String, email: String, password: String, name: String, permission: Permission, imageURL: String)

@@ -5,7 +5,7 @@ import play.api.mvc._
 import views.html._
 import ly.gravit.web._
 import ly.gravit.web.auth.Account
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsString, JsValue, JsObject}
 import scala.collection.mutable
 import java.util.Date
 import play.data.format.Formats.DateTime
@@ -45,7 +45,13 @@ object Photos extends BaseController with ParseApiConnectivity {
         val photo = Option(Photo.fromJson(json))
 
         val account = Option(Account((json \ "user" \ "objectId").as[String],
-          null, null, (json \ "user" \ "username").as[String], null))
+          null, null, (json \ "user" \ "username").as[String], null, (json \ "user" \ "picFacebookURL") match {
+            case u:JsString => u.as[String]
+            case _ => (json \ "user" \ "picTwitterURL") match {
+              case u:JsString => u.as[String]
+              case _ => null
+            }
+          }))
 
         val location = Option(Location((json \ "location" \ "objectId").as[String],
           (json \ "location" \ "name").as[String]))
@@ -69,20 +75,22 @@ object Photos extends BaseController with ParseApiConnectivity {
       .withQueryString("order" -> "-createdAt")
       .withQueryString("include" -> "user,location,category")
 
-    println(">>>>>>>>>>> QUERY"+query);
-
     Async {
       query.get.map {res =>
         val resultJson = res.json
-        //println("#### photosByJson: " + resultJson)
-
         val photoMap = new mutable.LinkedHashMap[String, Tuple4[Photo, Account, Location, Category]]()
 
         (resultJson \ "results").as[List[JsObject]].map {json =>
         val photo = Option(Photo.fromJson(json))
 
         val account = Option(Account((json \ "user" \ "objectId").as[String],
-          null, null, (json \ "user" \ "username").as[String], null))
+          null, null, (json \ "user" \ "username").as[String], null, (json \ "user" \ "picFacebookURL") match {
+          case u:JsString => u.as[String]
+          case _ => (json \ "user" \ "picTwitterURL") match {
+            case u:JsString => u.as[String]
+            case _ => null
+          }
+        }))
 
         val location = Option(Location((json \ "location" \ "objectId").as[String],
           (json \ "location" \ "name").as[String]))
@@ -119,7 +127,13 @@ object Photos extends BaseController with ParseApiConnectivity {
           val photo = Option(Photo.fromJson(json))
 
           val account = Option(Account((json \ "user" \ "objectId").as[String],
-            null, null, (json \ "user" \ "username").as[String], null))
+            null, null, (json \ "user" \ "username").as[String], null, (json \ "user" \ "picFacebookURL") match {
+              case u:JsString => u.as[String]
+              case _ => (json \ "user" \ "picTwitterURL") match {
+                case u:JsString => u.as[String]
+                case _ => null
+              }
+            }))
 
           val location = Option(Location((json \ "location" \ "objectId").as[String],
             (json \ "location" \ "name").as[String]))
@@ -156,7 +170,13 @@ object Photos extends BaseController with ParseApiConnectivity {
           val photo = Option(Photo.fromJson(json))
 
           val account = Option(Account((json \ "user" \ "objectId").as[String],
-            null, null, (json \ "user" \ "username").as[String], null))
+            null, null, (json \ "user" \ "username").as[String], null, (json \ "user" \ "picFacebookURL") match {
+              case u:JsString => u.as[String]
+              case _ => (json \ "user" \ "picTwitterURL") match {
+                case u:JsString => u.as[String]
+                case _ => null
+              }
+            }))
 
           val location = Option(Location((json \ "location" \ "objectId").as[String],
             (json \ "location" \ "name").as[String]))
@@ -193,7 +213,13 @@ object Photos extends BaseController with ParseApiConnectivity {
           val photo = Option(Photo.fromJson(json))
 
           val account = Option(Account((json \ "user" \ "objectId").as[String],
-            null, null, (json \ "user" \ "username").as[String], null))
+            null, null, (json \ "user" \ "username").as[String], null, (json \ "user" \ "picFacebookURL") match {
+              case u:JsString => u.as[String]
+              case _ => (json \ "user" \ "picTwitterURL") match {
+                case u:JsString => u.as[String]
+                case _ => null
+              }
+            }))
 
           val location = Option(Location((json \ "location" \ "objectId").as[String],
             (json \ "location" \ "name").as[String]))

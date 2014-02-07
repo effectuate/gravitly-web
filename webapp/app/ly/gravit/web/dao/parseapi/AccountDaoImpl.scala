@@ -40,7 +40,8 @@ object AccountDaoImpl extends AccountDao {
         (result\ "email").as[String],
         null,
         (result \ "username").as[String],
-        Permission.valueOf((result \ "permission").as[String])))
+        Permission.valueOf((result \ "permission").as[String]),
+        null))
     }
     None
   }
@@ -58,7 +59,8 @@ object AccountDaoImpl extends AccountDao {
         (res.json \ "email").as[String],
         null,
         (res.json \ "username").as[String],
-        Permission.valueOf((res.json \ "permission").as[String])
+        Permission.valueOf((res.json \ "permission").as[String]),
+        (res.json \ "picFacebookURL").as[String]
       ))
     }
     None
@@ -71,6 +73,9 @@ object AccountDaoImpl extends AccountDao {
     if(Logger.isDebugEnabled) {
       Logger.debug("Account.getByEmail: " + res.status)
     }
+
+    println(">>>>>>>>>>>>>>>>>>"+res.json)
+
     if (res.status == 200) {
       (res.json \ "results").as[List[JsObject]].map { result =>
         return Option(Account(
@@ -78,7 +83,8 @@ object AccountDaoImpl extends AccountDao {
           (result \ "email").as[String],
           null,
           (result \ "username").as[String],
-          Permission.valueOf((result \ "permission").as[String])
+          Permission.valueOf((result \ "permission").as[String]),
+          null
         ))
       }
     }
